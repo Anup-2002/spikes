@@ -1,0 +1,14 @@
+.env
+token.pickle
+client_secret.json
+
+venv/
+__pycache__/
+*.pyc
+
+uploads/
+output/
+
+*.mp4
+*.mov
+*.avi

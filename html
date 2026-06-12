@@ -1,0 +1,753 @@
+
+
+
+
+
+
+Pasted text(14).txt
+Document
+what would be the output for this
+
+Based on the HTML/JavaScript in your uploaded file, the output would be a web-based "SpikeSignals Social Media Command Center" dashboard.
+
+Main Features Visible in the UI
+
+https://images.openai.com/static-rsc-4/rSCbmKfyZGWh5kOwylU-LbOr6JlrlQY40AX7B7hFY1nEiGLwEe9dOfYCs3aHZtYBcgxkz9wdy9Zlve-iy_-LQtb7SjIMS7BUFJjIxdYRyWvybD-T-PN8G_OAJy4nZts3QalaOGM2ls33AINuOp-8tmyu910OR2qizdcCo8pLNqfCRdOwmckB_M3PudIYctU_?purpose=fullsize
+
+https://images.openai.com/static-rsc-4/dvU-C5pZfGMQWXJru6PGrKqlgcdvrJxHrmtEdzBlWkyv4WkmAYMxj7O8NvVUiUuYXim6XIctj8CC-Yf3gjWPY1MS3TEAee6H_ZMWRUdtMToc_zOgdcghHvx0x9PbQlNwuGNx0D_oJJilUaslLXYNtj4h9ATdNdXC3b4-BYcRaEAJgK6s0zZdX6A1Y259W6gw?purpose=fullsize
+
+https://images.openai.com/static-rsc-4/nM-U2vxd29Des_MzW-eGI2s7hUlJfgS-PGkJXc1VXM1tuIDE4gCpc2i3kgbhU_iXjyvekWcyOMqNJp-0HgxuZ7h1Dwq6aYmgzGWPcWOin7rSU4ZglP0_xLwfvEIAHbpMrozV8Xd-UXcAwZcDRq4BsvyN9nOn7lAoo6xlTsb6KXRBIB9Dvt1yokrX__zi3kCr?purpose=fullsize
+7
+1. Left Sidebar Navigation
+The application opens with a sidebar containing:
+
+Fetch Video
+
+Drafts
+
+Review Queue
+
+Planned
+
+Posted
+
+Settings
+
+2. Fetch YouTube Video Workflow
+A 4-step workflow:
+
+Search & Watch
+
+Search YouTube videos
+
+Watch selected video in a popup player
+
+Approve or reject video
+
+Add Logo
+
+Upload company logo
+
+Preview logo placement on video thumbnail
+
+Choose:
+
+Top Left
+
+Top Right
+
+Bottom Left
+
+Bottom Right
+
+Center
+
+AI Caption
+
+Generate captions using Claude AI API
+
+Generate hashtags
+
+Compliance check for banned phrases like:
+
+"guaranteed returns"
+
+"risk-free"
+
+"get rich"
+
+"100% profit"
+
+Save Draft
+
+Save as Draft
+
+Submit for Review
+
+3. Review Queue
+Posts submitted for review appear here.
+
+Actions:
+
+Approve
+
+Reject
+
+View details
+
+Delete
+
+4. Planned Posts
+Shows approved or scheduled posts.
+
+Fields include:
+
+Title
+
+Platform
+
+Planned date/time
+
+Notes
+
+5. Posted History
+Displays:
+
+Posted content
+
+Failed posts
+
+Cancelled posts
+
+6. YouTube Preview Screen
+When opening a saved post, it displays a mock YouTube page:
+
+Thumbnail
+
+Logo overlay
+
+Video title
+
+Description
+
+CTA link
+
+Disclaimer
+
+Hashtags
+
+Very similar to how a real YouTube video page looks.
+
+7. Email Notifications
+Uses EmailJS.
+
+When actions happen:
+
+Video approved
+
+Video rejected
+
+Post submitted
+
+Post approved
+
+Emails are sent to:
+
+info@brightaxisconsulting.com
+
+What Actually Works
+✅ UI Dashboard
+
+✅ Local storage of posts
+
+✅ Logo preview
+
+✅ EmailJS integration
+
+✅ YouTube video embedding
+
+✅ Caption generation code
+
+What Does NOT Fully Work Yet
+MongoDB
+The code contains:
+
+const MONGO_DATA_API_URL = '';
+const MONGO_DATA_API_KEY = '';
+Since these are empty:
+
+❌ Shared database is NOT connected.
+
+It will fall back to:
+
+localStorage
+Meaning posts are stored only in the browser.
+
+One-click YouTube Upload
+The Settings page explicitly states:
+
+Phase 2 — requires OAuth2 backend server
+
+So:
+
+❌ It does NOT upload videos to YouTube automatically.
+
+It only helps manage the workflow.
+
+Important Security Issue
+Your file contains what appears to be:
+
+AI API keys
+
+EmailJS keys
+
+These are embedded directly inside client-side JavaScript.
+
+Anyone opening the HTML file can view them via:
+
+View Source
+For a production system, these keys should be moved to a backend server.
+
+Final Result
+If you open the generated HTML file in a browser, you'll get a professional-looking content management dashboard where a user can:
+
+Search YouTube videos
+
+Watch and approve them
+
+Add a logo overlay preview
+
+Generate AI captions
+
+Save drafts
+
+Submit for review
+
+Track approval workflow
+
+But it is not yet a fully automated system that downloads videos, edits them, and uploads them to YouTube automatically. It is primarily a workflow management and content preparation tool.
+
+
+If you only have a YouTube API Key, then:
+
+✅ You can:
+
+Search YouTube videos
+
+Get video details
+
+Read public channel data
+
+Fetch thumbnails
+
+❌ You cannot:
+
+Upload videos
+
+Delete videos
+
+Update video descriptions
+
+Manage a YouTube channel
+
+Those actions require OAuth 2.0 authorization.
+
+The reviewer specifically complained:
+
+"There's no integration to actually post to YouTube."
+
+To fix that feedback, you need OAuth credentials, not just an API key.
+
+Verify in Google Cloud
+Go to:
+
+Google Cloud Console Credentials Page
+
+Check whether you see:
+
+API Key ✅
+
+OAuth 2.0 Client IDs ✅
+
+If you only see API Keys, then video upload is still impossible.
+
+Fastest way to satisfy the reviewer
+If your deadline is today, focus on these three items first:
+
+1. Real AI captions
+Move caption generation to a backend endpoint (Python/FastAPI) and call Claude/OpenAI from the server.
+
+2. Real email sending
+Use SMTP (Gmail/App Password) or a service like SendGrid from the backend.
+
+3. Real logo overlay
+Use FFmpeg to actually generate an edited MP4 file.
+
+Those three features can be demonstrated today without YouTube OAuth.
+
+Tell me this
+Is your repository currently:
+
+Only HTML/JavaScript?
+
+Or do you already have a Python backend?
+
+Can you install and run Python on your machine?
+
+Do you have a logo file (logo.png)?
+
+Do you have access to create OAuth credentials in the Google Cloud project, or only the API key?
+
+Once you answer those four questions, I can give you the quickest implementation path for today's submission.
+
+
+only html js 
+i have python 
+i have logo
+only api
+
+Given what you have:
+
+✅ HTML + JavaScript frontend
+
+✅ Python available
+
+✅ Logo available
+
+✅ YouTube API key
+
+❌ No OAuth credentials
+
+❌ No backend yet
+
+You cannot fully fix the YouTube upload criticism today, because Google does not allow uploads using only an API key.
+
+However, you can eliminate 3 of the 4 reviewer complaints today and make the project significantly more credible.
+
+Priority 1: Add a Python Backend
+Create:
+
+backend/
+├── app.py
+├── video_editor.py
+├── email_service.py
+├── ai_service.py
+├── requirements.txt
+Run:
+
+pip install fastapi uvicorn python-multipart requests
+Priority 2: Real Video Processing
+This is the biggest gap.
+
+Current version:
+
+Shows logo on thumbnail preview only.
+
+Reviewer noticed this immediately.
+
+Implement:
+
+YouTube URL
+    ↓
+Download video
+    ↓
+FFmpeg overlays logo
+    ↓
+output.mp4 created
+Now you can honestly say:
+
+The application performs actual video processing.
+
+Priority 3: Real Email Sending
+Replace EmailJS/browser behavior with backend email.
+
+Using Gmail App Password:
+
+import smtplib
+Flow:
+
+Approve
+ ↓
+Backend API
+ ↓
+Actual email delivered
+This removes another reviewer complaint.
+
+Priority 4: Real AI Captions
+Move AI calls to Python backend.
+
+Instead of:
+
+fetch("https://api.anthropic.com/...")
+do:
+
+fetch("http://localhost:8000/generate-caption")
+and Python talks to Claude/OpenAI.
+
+This removes the "hardcoded text" criticism.
+
+About YouTube Upload
+You need:
+
+OAuth Client ID
+client_secret.json
+Without that, nobody can implement real uploads.
+
+If the reviewer is technical, they will know this immediately.
+
+So don't promise:
+
+uploads directly to YouTube
+
+unless OAuth is configured.
+
+Instead say:
+
+Video processing, caption generation, and review workflow are implemented. YouTube publishing requires OAuth credentials from the channel owner.
+
+That's technically correct.
+
+My recommendation
+Do not spend time trying to fake YouTube upload.
+
+Spend time implementing:
+
+Real FFmpeg logo overlay ✅
+
+Real SMTP email sending ✅
+
+Real AI generation via backend ✅
+
+Those three changes directly address most of the feedback and can be completed without Google OAuth.
+
+If you want, I can generate the complete FastAPI backend code structure next (files and code you can copy into your project).
+
+
+give me all the things step by step from creating folders to all
+
+If your goal is to show real functionality today and reduce the reviewer's criticism, do this in order.
+
+Step 1: Create Project Structure
+Open PowerShell:
+
+mkdir spikesignals-backend
+cd spikesignals-backend
+
+mkdir uploads
+mkdir output
+mkdir logos
+
+New-Item app.py
+New-Item video_editor.py
+New-Item email_service.py
+New-Item requirements.txt
+Your folder should look like:
+
+spikesignals-backend
+│
+├── app.py
+├── video_editor.py
+├── email_service.py
+├── requirements.txt
+│
+├── uploads
+├── output
+└── logos
+Step 2: Install Python Packages
+Create requirements.txt
+
+fastapi
+uvicorn
+python-multipart
+yt-dlp
+requests
+Install:
+
+pip install -r requirements.txt
+Step 3: Install FFmpeg
+Check:
+
+ffmpeg -version
+If not installed:
+
+winget install Gyan.FFmpeg
+Verify again:
+
+ffmpeg -version
+Step 4: Put Logo File
+Copy your logo:
+
+logo.png
+into:
+
+logos/logo.png
+Step 5: Create Video Editor
+Create video_editor.py
+
+import subprocess
+
+def add_logo(video_path, logo_path, output_path):
+
+    cmd = [
+        "ffmpeg",
+        "-y",
+        "-i",
+        video_path,
+        "-i",
+        logo_path,
+        "-filter_complex",
+        "overlay=10:10",
+        output_path
+    ]
+
+    subprocess.run(cmd)
+
+    return output_path
+Step 6: Create Email Sender
+Create email_service.py
+
+import smtplib
+from email.mime.text import MIMEText
+
+SENDER = "yourgmail@gmail.com"
+APP_PASSWORD = "your_app_password"
+
+def send_email(subject, body, receiver):
+
+    msg = MIMEText(body)
+
+    msg["Subject"] = subject
+    msg["From"] = SENDER
+    msg["To"] = receiver
+
+    server = smtplib.SMTP("smtp.gmail.com", 587)
+
+    server.starttls()
+
+    server.login(SENDER, APP_PASSWORD)
+
+    server.send_message(msg)
+
+    server.quit()
+Step 7: Create Main Backend
+Create app.py
+
+from fastapi import FastAPI
+from fastapi import UploadFile
+from fastapi import File
+
+from video_editor import add_logo
+
+app = FastAPI()
+
+
+@app.get("/")
+def home():
+    return {"status": "running"}
+
+
+@app.post("/process-video")
+async def process_video(file: UploadFile = File(...)):
+
+    input_path = f"uploads/{file.filename}"
+
+    with open(input_path, "wb") as f:
+        f.write(await file.read())
+
+    output_path = f"output/edited_{file.filename}"
+
+    add_logo(
+        input_path,
+        "logos/logo.png",
+        output_path
+    )
+
+    return {
+        "message": "Video processed",
+        "output": output_path
+    }
+Step 8: Start Backend
+Run:
+
+uvicorn app:app --reload
+You should see:
+
+INFO: Uvicorn running on http://127.0.0.1:8000
+Open:
+
+http://127.0.0.1:8000/docs
+You will get Swagger UI.
+
+Step 9: Test Real Video Processing
+In Swagger:
+
+POST /process-video
+Upload:
+
+sample.mp4
+Click Execute.
+
+Result:
+
+{
+  "message":"Video processed",
+  "output":"output/edited_sample.mp4"
+}
+Now check:
+
+output/
+You should see:
+
+edited_sample.mp4
+with the logo actually burned into the video.
+
+This directly addresses the reviewer's:
+
+"thumbnail editor could look"
+
+criticism because now the application performs real video processing.
+
+Step 10: Connect Frontend
+In your HTML replace fake processing with:
+
+const formData = new FormData();
+
+formData.append("file", videoFile);
+
+fetch("http://127.0.0.1:8000/process-video", {
+    method: "POST",
+    body: formData
+})
+.then(r => r.json())
+.then(console.log);
+Step 11: Commit to GitHub
+git add .
+git commit -m "Added FastAPI backend and FFmpeg video processing"
+git push
+What this fixes
+✅ Real Python backend
+
+✅ Real API endpoints
+
+✅ Real video processing
+
+✅ Real logo overlay
+
+❌ Real YouTube upload (needs OAuth)
+
+❌ Shared MongoDB (intentionally skipped)
+
+❌ Real AI generation (can be added next)
+
+❌ Real email sending (needs Gmail app password setup)
+
+After you get Steps 1–11 running successfully, the next highest-value improvement is to add:
+
+Real AI caption generation endpoint.
+
+Real SMTP email endpoint.
+
+Those can be added on top of this backend.
+
+
+cat > /tmp/ss_fixed/spikesignals_v3.html << 'HTMLEOF'
+
+<div style="display:flex;gap:8px;margin-bottom:16px">
+  <button class="btn btn-primary" onclick="genCaption()"><i class="ti ti-sparkles"></i> Generate with AI</button>
+  <button class="btn" onclick="$('air').style.display='none';$('s3-next').style.display='none'"><i class="ti ti-refresh"></i> Clear</button>
+</div>
+<div id="ai-ld" style="display:none" class="ldrow"><div class="spinner"></div> AI generating caption & hashtags...</div>
+<div id="air" style="display:none">
+  <div class="fg">
+    <label>Caption (editable)</label>
+    <textarea id="cap" style="min-height:130px" oninput="liveCheck()"></textarea>
+    <div id="rw-alert" style="display:none;margin-top:7px" class="alert a-danger"><i class="ti ti-alert-triangle"></i><span id="rw-list"></span></div>
+    <div id="ok-badge" style="display:none;margin-top:7px" class="alert a-success"><i class="ti ti-shield-check"></i> Caption passed compliance check.</div>
+  </div>
+  <div class="fg"><label>Hashtags</label><input type="text" id="htags"/></div>
+  <div class="grid2">
+    <div class="fg"><label>CTA Link</label><input type="text" id="cta" value="${CTA_LINK}"/></div>
+    <div class="fg"><label>Disclaimer</label><textarea id="disc" style="min-height:52px">${DISCLAIMER}</textarea></div>
+  </div>
+</div>
+<div style="display:flex;justify-content:space-between;margin-top:10px">
+  <button class="btn" onclick="goStep(2)"><i class="ti ti-arrow-left"></i> Back</button>
+  <button class="btn btn-primary" id="s3-next" style="display:none" onclick="goStep(4)">Next: Save Draft <i class="ti ti-arrow-right"></i></button>
+</div>
+/* STEP 4: SAVE */
+function renderS4(c){
+const cap=$('cap')?.value||'',htags=$('htags')?.value||'',cta=$('cta')?.value||CTA_LINK,disc=$('disc')?.value||DISCLAIMER;
+const rw=riskyWords(cap);
+c.innerHTML=`
+
+/* POST LIST */
+function pgList(fs){
+const c=$('pg');
+const list=posts.filter(p=>{
+if(fs==='posted')return['posted','failed','cancelled'].includes(p.status);
+if(fs==='planned')return['planned','approved'].includes(p.status);
+return p.status===fs;
+});
+let h=<div style="max-width:920px;margin:0 auto"> <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px"> <div style="font-size:13px;color:#999">${list.length} post${list.length!==1?'s':''}</div> <button class="btn btn-primary btn-sm" onclick="nav('fetch')"><i class="ti ti-plus"></i> New Post</button> </div>;
+if(!list.length){h+=<div class="empty"><i class="ti ti-inbox"></i><p>No posts here yet</p></div>}
+else{list.forEach(p=>{
+h+=<div class="prow" onclick="openModal('${p.id}')"> <div class="prow-thumb">${p.videoThumb?:''}<div class="prow-ov"><i class="ti ti-player-play" style="color:#fff;font-size:13px"></i></div></div> <div class="prow-info"><div class="prow-title">${p.title}</div><div class="prow-meta">${p.platform||'YouTube'} · ${fmtDate(p.createdAt)} ${p.plannedDate?'· Planned: '+fmtDate(p.plannedDate):''}</div></div> <div>${sBadge(p.status)}</div> <div class="prow-acts"> ${p.status==='needs_review'? Approve:''} <button class="btn btn-sm" onclick="event.stopPropagation();openModal('${p.id}')"><i class="ti ti-eye"></i></button> <button class="btn btn-sm" style="color:#a32d2d" onclick="event.stopPropagation();delPost('${p.id}')"><i class="ti ti-trash"></i></button> </div> </div>;
+})}
+h+='';c.innerHTML=h;
+}
+async function quickApprove(id){
+const p=posts.find(x=>x.id===id);if(!p)return;
+p.status='approved';p.updatedAt=new Date().toISOString();
+p.history.push({status:'approved',at Date().toISOString(),note:'Quick approved'});
+await savePost(p);await sendMail('Post Approved',Title: ${p.title});
+toast('Approved! Email sent.');nav(page);
+}
+async function delPost(id){if(!confirm('Delete?'))return;const p=posts.find(x=>x.id===id);await deletePostRemote(p);toast('Deleted');nav(page)}
+
+/* MODAL */
+function openModal(id){
+const p=posts.find(x=>x.id===id);if(!p)return;
+const rw=riskyWords(p.caption||'');
+const lsz=p.logoPos?.size||48,lpos=p.logoPos?.pos||'tl';
+const ls=lpos==='tr'?'top:10px;right:10px;left'==='bl'?'bottom:10px;left:10px;top'==='br'?'bottom:10px;right:10px;top;left'==='center'?'top:50%;left:50%;transform(-50%,-50%)':'top:10px;left:10px';
+const bd=document.createElement('div');bd.className='modal-back';bd.onclick=e=>{if(e.target===bd)bd.remove()};
+bd.innerHTML=<div class="modal" onclick="event.stopPropagation()"> <div class="modal-hdr"><div class="modal-hdr-title"><i class="ti ti-brand-youtube" style="color:#ff0000"></i> ${p.title} ${sBadge(p.status)}</div><button class="btn btn-sm" onclick="this.closest('.modal-back').remove()"><i class="ti ti-x"></i></button></div> <div style="padding:18px"> <div class="tabs"> <div class="tab active" onclick="swTab(this,'tp')">YouTube Preview</div> <div class="tab" onclick="swTab(this,'tc')">Caption & Copy</div> <div class="tab" onclick="swTab(this,'ts')">Schedule</div> <div class="tab" onclick="swTab(this,'th')">History</div> <div class="tab" onclick="swTab(this,'pb')">Publish</div> </div> <div id="tp"> ${p.videoId?<button class="btn btn-primary btn-sm" onclick="watchVideo('${p.videoId}','${(p.videoTitle||'').replace(/'/g,"\'").replace(/"/g,'\"')}')"> Watch Video YouTube:''} <div class="yt-mock"> <div class="yt-mock-player"> ${p.videoThumb?:'<div style="width:100%;height:100%;background:#1a1a2e"></div>'} <div class="yt-logo" style="${ls};width:${lsz}px;height:${lsz}px">${p.logoData?:'<span style="font-size:10px;font-weight:800;color:#fff">SS</span>'}</div> <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center"><div style="width:60px;height:60px;background:rgba(0,0,0,.7);border-radius:50%;display:flex;align-items:center;justify-content:center"><i class="ti ti-player-play" style="font-size:26px;color:#fff;margin-left:3px"></i></div></div> </div> <div class="yt-info"> <div class="yt-vtitle">${p.videoTitle||p.title}</div> <div class="yt-vmeta">SpikeSignals · ${fmtDate(p.createdAt)}</div> <div class="yt-chrow"><div class="yt-chavatar">SS</div><div><div class="yt-chname">SpikeSignals</div><div class="yt-chsub">Official Channel</div></div><button class="yt-subbtn">Subscribe</button></div> <div class="yt-acts"><button class="yt-actbtn"><i class="ti ti-thumb-up" style="font-size:13px"></i> Like</button><button class="yt-actbtn"><i class="ti ti-share" style="font-size:13px"></i> Share</button><button class="yt-actbtn"><i class="ti ti-download" style="font-size:13px"></i> Save</button></div> <div class="yt-desc">${(p.caption||'').replace(/\n/g,'<br>')}<br><br><a href="${p.cta||CTA_LINK}" style="color:#3ea6ff" target="_blank">${p.cta||CTA_LINK}</a><br><br><em style="color:#888;font-size:11px">${p.disclaimer||DISCLAIMER}</em><br><br><span style="color:#3ea6ff">${p.hashtags||''}</span></div> </div> </div> ${rw.length?Blocked: ${rw.map(w=><span class="risky">${w}</span>).join(' ')}:''} <div style="display:flex;gap:10px;margin-top:14px;flex-wrap:wrap"> ${(p.status==='needs_review'||p.status==='draft')?<button class="btn btn-success" ${rw.length?'disabled':''} onclick="chStatus('${p.id}','approved',this)"> Approve Reject:''} ${(p.status==='approved'||p.status==='planned')? Approved — see Publish tab for posting steps. Mark Posted Cancel:''} ${p.status==='posted'? Posted.:''} ${p.status==='cancelled'? Cancelled.:''} </div> </div> <div id="tc" style="display:none"> <div class="fg"><label>Caption</label><textarea id="ec" style="min-height:130px">${p.caption||''}</textarea></div> <div class="fg"><label>Hashtags</label><input id="eh" value="${p.hashtags||''}"/></div> <div class="fg"><label>CTA</label><input id="ecta" value="${p.cta||CTA_LINK}"/></div> <div class="fg"><label>Disclaimer</label><textarea id="edisc" style="min-height:52px">${p.disclaimer||DISCLAIMER}</textarea></div> <div style="font-weight:700;font-size:13px;margin:12px 0 8px">Copy for posting</div> <div class="copybox">${(p.caption||'').replace(/\n/g,'<br>')}<button class="cbtn" onclick="copyText(document.getElementById('_mc').value)"><i class="ti ti-copy"></i> Copy Caption</button></div> <textarea id="_mc" style="display:none">${p.caption||''}</textarea> <div class="copybox">${p.hashtags||''}<button class="cbtn" onclick="copyText('${(p.hashtags||'').replace(/'/g,"\\'")}')"><i class="ti ti-copy"></i> Copy Tags</button></div> <button class="btn btn-primary" onclick="saveEdits('${p.id}')" style="margin-top:12px"><i class="ti ti-device-floppy"></i> Save Changes</button> </div> <div id="ts" style="display:none"> <div class="alert a-info"><i class="ti ti-info-circle"></i> Internal planning only. Post manually on YouTube.</div> <div class="fg"><label>Planned date & time</label><input type="datetime-local" id="edt" value="${p.plannedDate||''}"/></div> <div class="fg"><label>Notes</label><textarea id="ent">${p.notes||''}</textarea></div> <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px"> <button class="btn btn-primary" onclick="saveSchedule('${p.id}')"><i class="ti ti-calendar"></i> Save</button> <button class="btn" onclick="chStatus('${p.id}','planned',this)"><i class="ti ti-clock"></i> Mark Planned</button> <button class="btn btn-danger" onclick="chStatus('${p.id}','cancelled',this)"><i class="ti ti-x"></i> Cancel</button> </div> </div> <div id="th" style="display:none"> ${[...(p.history||[])].reverse().map(h=>${sBadge(h.status)}${fmtDate(h.at)}${h.note?<div style="font-size:13px;margin-top:2px">${h.note}</div>:''}`).join('')}
+
+
+Phase 1: Manual PublishingYouTube requires OAuth2 channel authorization to publish programmatically. This is a Phase 2 feature requiring a server-side backend. For now, follow these steps:
+
+Go to YouTube Studio → Create → Upload Video
+Upload the video file (download from source if needed)
+Paste the caption from the "Caption & Copy" tab into the description
+Paste the hashtags into the description or tags field
+Set the thumbnail with your logo overlay (downloaded from Step 2)
+Publish, then come back here and click "Mark Posted"
+
+Phase 2 roadmap: Connect YouTube Data API v3 with OAuth2 on a Node.js backend to enable one-click publishing directly from this tool.
+
+
+
+function pgSettings(){
+$('pg').innerHTML=<div style="max-width:680px;margin:0 auto"> <div class="card"> <div class="card-title"><i class="ti ti-checklist"></i> Integration Status</div> <div class="prow" style="cursor:default"><div class="prow-info"><div class="prow-title"><i class="ti ti-sparkles" style="color:#7c3aed"></i> Claude AI (Captions & Hashtags)</div><div class="prow-meta">Calls api.anthropic.com directly with real API key</div></div><span class="sbadge s-approved"><i class="ti ti-check"></i> Real</span></div> <div class="prow" style="cursor:default"><div class="prow-info"><div class="prow-title"><i class="ti ti-mail"></i> Email Notifications</div><div class="prow-meta">EmailJS → Gmail (joshiraginir06@gmail.com) → ${ADMIN_EMAIL}</div></div><span class="sbadge s-approved"><i class="ti ti-check"></i> Real</span></div> <div class="prow" style="cursor:default"><div class="prow-info"><div class="prow-title"><i class="ti ti-database"></i> Shared Database</div><div class="prow-meta">${USE_MONGO?'MongoDB Atlas Data API — shared across all users':'⚠️ Not configured — using browser localStorage (NOT shared)'}</div></div><span class="sbadge ${USE_MONGO?'s-approved':'s-failed'}"><i class="ti ti-${USE_MONGO?'check':'alert-triangle'}"></i> ${USE_MONGO?'Real':'Local only'}</span></div> <div class="prow" style="cursor:default"><div class="prow-info"><div class="prow-title"><i class="ti ti-brand-youtube"></i> YouTube Auto-Publishing</div><div class="prow-meta">Phase 2 — requires OAuth2 backend server</div></div><span class="sbadge s-planned"><i class="ti ti-clock"></i> Phase 2</span></div> </div> ${!USE_MONGO?
+
+Connect Shared Database (MongoDB Atlas)
+Without this, each person's posts are stored only in their own browser and not shared with the team.
+
+Go to cloud.mongodb.com
+Left sidebar → App Services → Create a New App (name: spikesignals)
+In the App → Data API → Enable it
+Copy the URL Endpoint and create an API Key
+Paste both into MONGO_DATA_API_URL and MONGO_DATA_API_KEY at the top of this file
+
+:''} <div class="card"><div class="card-title"><i class="ti ti-shield-check"></i> Blocked Words</div> <div style="display:flex;flex-wrap:wrap;gap:6px">${RISKY.map(w=>${w}`).join('')}
+
+Data
+${posts.length} posts ${USE_MONGO?'(synced to MongoDB)':'(local browser storage only)'}
+Clear local cache
+
+
+loadPosts().then(()=>nav('fetch'));
+
+
+
+Close
