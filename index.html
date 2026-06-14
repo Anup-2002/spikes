@@ -1,0 +1,1003 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>SpikeSignals — Social Media Command Center</title>
+<style>
+:root {
+  --bg: #080B14; --surface: #0E1220; --surface2: #131929; --surface3: #1A2236;
+  --border: #1E2C45; --border2: #2A3D5C;
+  --text: #E2E8F0; --text2: #8896B0; --text3: #4A5880;
+  --accent: #6366F1; --accent2: #818CF8;
+  --green: #10B981; --yellow: #F59E0B; --red: #EF4444; --purple: #8B5CF6;
+  --yt: #FF0000; --tt1: #EE1D52; --tt2: #69C9D0; --ig1: #E1306C; --ig2: #FCAF45;
+  --r: 10px; --r2: 6px;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: -apple-system, BlinkMacSystemFont, 'Inter', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; font-size: 14px; line-height: 1.5; }
+
+/* Layout */
+.layout { display: flex; min-height: 100vh; }
+.sidebar { width: 236px; background: var(--surface); border-right: 1px solid var(--border); display: flex; flex-direction: column; position: fixed; height: 100vh; overflow-y: auto; z-index: 50; }
+.main { margin-left: 236px; flex: 1; padding: 28px 32px; min-height: 100vh; }
+
+/* Sidebar */
+.logo { padding: 20px 18px 16px; border-bottom: 1px solid var(--border); }
+.logo-name { font-size: 17px; font-weight: 800; background: linear-gradient(135deg, #818CF8, #EC4899); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+.logo-sub { font-size: 10px; color: var(--text3); text-transform: uppercase; letter-spacing: 1.5px; margin-top: 2px; }
+
+.nav { padding: 10px 8px; flex: 1; }
+.nav-sec { font-size: 10px; color: var(--text3); text-transform: uppercase; letter-spacing: 1.5px; padding: 10px 10px 4px; }
+.nav-item { display: flex; align-items: center; gap: 9px; padding: 8px 10px; border-radius: var(--r2); cursor: pointer; color: var(--text2); font-size: 13px; font-weight: 500; margin-bottom: 1px; transition: all .15s; border: none; background: transparent; width: 100%; text-align: left; }
+.nav-item:hover { background: var(--surface2); color: var(--text); }
+.nav-item.active { background: #6366F118; color: var(--accent2); }
+.nav-badge { margin-left: auto; font-size: 10px; font-weight: 700; padding: 2px 6px; border-radius: 10px; background: var(--yellow); color: #000; }
+.nav-badge.red { background: var(--red); color: #fff; }
+
+.plat-section { padding: 8px; border-top: 1px solid var(--border); }
+.plat-btn { display: flex; align-items: center; gap: 8px; padding: 7px 10px; border-radius: var(--r2); cursor: pointer; font-size: 12px; font-weight: 600; transition: all .15s; color: var(--text2); border: none; background: transparent; width: 100%; text-align: left; }
+.plat-btn:hover { background: var(--surface2); }
+.plat-btn.act-yt { background: #FF000015; color: #FF5555; }
+.plat-btn.act-tt { background: #69C9D015; color: var(--tt2); }
+.plat-btn.act-ig { background: #E1306C15; color: var(--ig1); }
+.plat-btn.act-all { background: #6366F110; color: var(--accent2); }
+.dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+
+/* Config Banner - shown when integrations missing */
+.config-banner { background: #7C2D1220; border: 1px solid #F9731655; border-radius: var(--r); padding: 14px 18px; margin-bottom: 20px; }
+.config-banner-title { color: #FB923C; font-size: 13px; font-weight: 700; margin-bottom: 6px; }
+.config-item { display: flex; align-items: center; gap: 8px; font-size: 12px; color: #FED7AA; padding: 3px 0; }
+
+/* Topbar */
+.topbar { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 24px; gap: 16px; }
+.page-title { font-size: 22px; font-weight: 800; }
+.page-sub { font-size: 13px; color: var(--text2); margin-top: 3px; }
+
+/* Buttons */
+.btn { display: inline-flex; align-items: center; gap: 6px; padding: 8px 16px; border-radius: var(--r2); font-size: 13px; font-weight: 600; border: none; cursor: pointer; transition: all .15s; white-space: nowrap; text-decoration: none; }
+.btn-primary { background: var(--accent); color: #fff; }
+.btn-primary:hover { background: var(--accent2); }
+.btn-secondary { background: var(--surface2); color: var(--text); border: 1px solid var(--border2); }
+.btn-secondary:hover { background: var(--surface3); }
+.btn-success { background: #10B98120; color: var(--green); border: 1px solid #10B98140; }
+.btn-success:hover { background: #10B98130; }
+.btn-danger { background: #EF444420; color: var(--red); border: 1px solid #EF444440; }
+.btn-danger:hover { background: #EF444430; }
+.btn-sm { padding: 5px 10px; font-size: 12px; }
+.btn:disabled { opacity: .45; cursor: not-allowed; }
+
+/* Stats */
+.stats { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 14px; margin-bottom: 24px; }
+.stat { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r); padding: 16px 18px; }
+.stat-n { font-size: 28px; font-weight: 800; }
+.stat-l { font-size: 11px; color: var(--text2); margin-top: 3px; text-transform: uppercase; letter-spacing: .5px; }
+.stat.hi { border-color: #6366F130; } .stat.hi .stat-n { color: var(--accent2); }
+
+/* Badges */
+.badge { display: inline-flex; align-items: center; gap: 4px; padding: 2px 8px; border-radius: 20px; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .3px; }
+.badge::before { content: ''; width: 5px; height: 5px; border-radius: 50%; background: currentColor; flex-shrink: 0; }
+.s-draft { background: #37415130; color: #9CA3AF; }
+.s-needs_review { background: #F59E0B20; color: #F59E0B; }
+.s-approved { background: #10B98120; color: #10B981; }
+.s-planned { background: #3B82F620; color: #60A5FA; }
+.s-posted { background: #8B5CF620; color: #A78BFA; }
+.s-failed { background: #EF444420; color: #EF4444; }
+.s-cancelled { background: #37415120; color: #6B7280; }
+.pb { display: inline-flex; align-items: center; gap: 5px; padding: 2px 8px; border-radius: 20px; font-size: 11px; font-weight: 700; }
+.pb.youtube { background: #FF000018; color: #FF5555; }
+.pb.tiktok { background: #69C9D018; color: #69C9D0; }
+.pb.instagram { background: #E1306C18; color: #E1306C; }
+
+/* Cards */
+.card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r); }
+.card-head { padding: 14px 18px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
+.card-title { font-size: 14px; font-weight: 600; }
+.card-body { padding: 18px; }
+
+/* Posts grid */
+.posts-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 14px; }
+.post-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r); overflow: hidden; cursor: pointer; transition: border-color .2s; }
+.post-card:hover { border-color: var(--border2); }
+.post-thumb { aspect-ratio: 16/9; background: var(--surface2); position: relative; overflow: hidden; }
+.post-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.post-thumb-ph { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; font-size: 42px; background: linear-gradient(135deg, #131929, #1A2236); }
+.post-overlay { position: absolute; top: 8px; left: 8px; right: 8px; display: flex; justify-content: space-between; align-items: flex-start; gap: 6px; pointer-events: none; }
+.post-body { padding: 14px; }
+.post-title { font-size: 14px; font-weight: 600; margin-bottom: 5px; line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.post-cap { font-size: 12px; color: var(--text2); line-height: 1.5; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; margin-bottom: 10px; }
+.post-foot { display: flex; align-items: center; justify-content: space-between; }
+.post-date { font-size: 11px; color: var(--text3); }
+
+/* Filters */
+.filters { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 18px; align-items: center; }
+.fsel { background: var(--surface2); border: 1px solid var(--border); color: var(--text); padding: 7px 12px; border-radius: var(--r2); font-size: 13px; outline: none; cursor: pointer; }
+.fsel:focus { border-color: var(--accent); }
+
+/* Empty */
+.empty { text-align: center; padding: 60px 24px; }
+.empty-icon { font-size: 52px; margin-bottom: 14px; }
+.empty-title { font-size: 18px; font-weight: 700; margin-bottom: 8px; }
+.empty-sub { font-size: 13px; color: var(--text2); max-width: 380px; margin: 0 auto 24px; }
+
+/* Modal */
+.overlay { position: fixed; inset: 0; background: rgba(0,0,0,.75); z-index: 200; display: flex; align-items: center; justify-content: center; padding: 16px; backdrop-filter: blur(4px); }
+.modal { background: var(--surface); border: 1px solid var(--border2); border-radius: 14px; width: 100%; max-width: 940px; max-height: 94vh; display: flex; flex-direction: column; overflow: hidden; }
+.modal-lg { max-width: 1060px; }
+.modal-head { padding: 18px 22px; border-bottom: 1px solid var(--border); display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; flex-shrink: 0; }
+.modal-title { font-size: 16px; font-weight: 700; }
+.modal-body { padding: 22px; overflow-y: auto; flex: 1; }
+.modal-foot { padding: 14px 22px; border-top: 1px solid var(--border); display: flex; justify-content: flex-end; gap: 8px; flex-shrink: 0; }
+.x-btn { width: 28px; height: 28px; border-radius: 50%; background: var(--surface2); border: 1px solid var(--border); color: var(--text2); cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 13px; flex-shrink: 0; }
+.x-btn:hover { background: var(--surface3); }
+
+/* Forms */
+.fg { margin-bottom: 16px; }
+.fl { display: block; font-size: 11px; font-weight: 700; color: var(--text2); text-transform: uppercase; letter-spacing: .5px; margin-bottom: 5px; }
+.fi { width: 100%; background: var(--surface2); border: 1px solid var(--border); color: var(--text); padding: 9px 12px; border-radius: var(--r2); font-size: 13px; outline: none; transition: border-color .15s; font-family: inherit; }
+.fi:focus { border-color: var(--accent); }
+.fi::placeholder { color: var(--text3); }
+textarea.fi { resize: vertical; line-height: 1.6; }
+.frow { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.fhint { font-size: 11px; color: var(--text3); margin-top: 4px; }
+
+/* Platform selector */
+.plat-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 18px; }
+.plat-card { padding: 16px 12px; border: 2px solid var(--border); border-radius: var(--r); cursor: pointer; text-align: center; transition: all .2s; background: var(--surface2); }
+.plat-card:hover { border-color: var(--border2); }
+.plat-card.sel { border-color: var(--accent); background: #6366F110; }
+.plat-card .pi { font-size: 28px; margin-bottom: 6px; }
+.plat-card .pn { font-size: 13px; font-weight: 700; }
+.plat-card .pd { font-size: 11px; color: var(--text2); margin-top: 2px; }
+
+/* Content display */
+.cbox { background: var(--surface2); border: 1px solid var(--border); border-radius: var(--r); padding: 14px; margin-bottom: 12px; }
+.cbox-label { font-size: 10px; font-weight: 700; color: var(--text3); text-transform: uppercase; letter-spacing: .5px; margin-bottom: 8px; }
+.cbox-text { font-size: 13px; color: var(--text); line-height: 1.7; white-space: pre-wrap; }
+.tag-cloud { display: flex; flex-wrap: wrap; gap: 5px; }
+.tag { background: #6366F118; color: var(--accent2); font-size: 11px; padding: 3px 9px; border-radius: 20px; }
+.disclaimer { background: #F59E0B0D; border: 1px solid #F59E0B33; border-radius: var(--r2); padding: 11px 14px; font-size: 12px; color: #FCD34D; line-height: 1.6; }
+.cta-link { display: inline-flex; align-items: center; gap: 6px; background: #6366F118; color: var(--accent2); font-size: 13px; font-weight: 600; padding: 7px 13px; border-radius: var(--r2); text-decoration: none; border: 1px solid #6366F133; }
+
+/* Compliance */
+.comp-ok { background: #10B98110; border: 1px solid #10B98133; border-radius: var(--r2); padding: 10px 14px; display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--green); }
+.comp-warn { background: #EF44441A; border: 1px solid #EF444433; border-radius: var(--r2); padding: 12px 14px; }
+.comp-warn-title { color: var(--red); font-size: 13px; font-weight: 700; margin-bottom: 6px; }
+.comp-flag { background: #EF444425; color: var(--red); font-size: 11px; padding: 2px 8px; border-radius: 20px; display: inline-block; margin: 2px; }
+
+/* Error display */
+.error-box { background: #EF44441A; border: 1px solid #EF444444; border-radius: var(--r); padding: 14px 16px; margin-bottom: 16px; }
+.error-title { color: var(--red); font-size: 14px; font-weight: 700; margin-bottom: 6px; }
+.error-detail { font-size: 12px; color: #FCA5A5; line-height: 1.6; font-family: monospace; }
+.error-hint { font-size: 12px; color: #FDA4AF; margin-top: 6px; }
+
+/* Preview phones */
+.preview-wrap { background: #000; border-radius: var(--r); padding: 18px; display: flex; justify-content: center; border: 1px solid var(--border); }
+.tt-phone { width: 210px; background: #000; border-radius: 28px; overflow: hidden; border: 2px solid #333; }
+.tt-screen { aspect-ratio: 9/16; background: linear-gradient(180deg, #1a1a2e, #16213e); position: relative; overflow: hidden; }
+.tt-screen img { width: 100%; height: 100%; object-fit: cover; }
+.tt-grad { position: absolute; inset: 0; background: linear-gradient(to top, rgba(0,0,0,.85) 0%, transparent 55%); }
+.tt-bottom { position: absolute; bottom: 0; left: 0; right: 40px; padding: 10px; }
+.tt-user { font-size: 10px; font-weight: 800; color: #fff; margin-bottom: 4px; display: flex; align-items: center; gap: 5px; }
+.tt-cap { font-size: 9px; color: #fff; line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+.tt-tags { font-size: 9px; color: #69C9D0; margin-top: 3px; }
+.tt-side { position: absolute; right: 5px; bottom: 50px; display: flex; flex-direction: column; gap: 14px; align-items: center; }
+.tt-act { display: flex; flex-direction: column; align-items: center; gap: 2px; }
+.tt-act-i { width: 32px; height: 32px; background: rgba(255,255,255,.12); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 14px; }
+.tt-act-c { font-size: 8px; color: #fff; text-align: center; }
+.tt-disc { width: 26px; height: 26px; background: linear-gradient(135deg, #222, #555); border-radius: 50%; border: 3px solid #888; animation: spin 3s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.ig-phone { width: 210px; background: #000; border-radius: 28px; overflow: hidden; border: 2px solid #333; }
+.ig-screen { aspect-ratio: 9/16; position: relative; overflow: hidden; background: linear-gradient(180deg, #1a1a2e, #16213e); }
+.ig-screen img { width: 100%; height: 100%; object-fit: cover; }
+.ig-grad { position: absolute; inset: 0; background: linear-gradient(to top, rgba(0,0,0,.85) 0%, transparent 55%); }
+.ig-story { position: absolute; top: 8px; left: 8px; right: 8px; height: 2px; background: rgba(255,255,255,.3); border-radius: 2px; }
+.ig-prog { height: 100%; width: 60%; background: #fff; border-radius: 2px; }
+.ig-bottom { position: absolute; bottom: 0; left: 0; right: 40px; padding: 10px; }
+.ig-user { font-size: 10px; font-weight: 800; color: #fff; margin-bottom: 4px; }
+.ig-cap { font-size: 9px; color: #fff; line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+.ig-tags { font-size: 9px; color: #90d4f7; margin-top: 3px; }
+.ig-side { position: absolute; right: 5px; bottom: 50px; display: flex; flex-direction: column; gap: 14px; align-items: center; }
+.ig-act { display: flex; flex-direction: column; align-items: center; gap: 2px; font-size: 16px; color: #fff; }
+.ig-act-c { font-size: 8px; color: #fff; }
+
+/* YT preview */
+.yt-embed { background: #0f0f0f; border-radius: var(--r); overflow: hidden; border: 1px solid #272727; }
+.yt-video { aspect-ratio: 16/9; background: #000; position: relative; }
+.yt-video iframe { width: 100%; height: 100%; border: none; display: block; }
+.yt-video .yt-ph { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; font-size: 48px; }
+.yt-meta { padding: 14px; background: #0f0f0f; }
+.yt-title { font-size: 14px; font-weight: 700; color: #fff; margin-bottom: 8px; line-height: 1.4; }
+.yt-ch { font-size: 12px; color: #aaa; display: flex; align-items: center; gap: 6px; margin-bottom: 8px; }
+.yt-av { width: 24px; height: 24px; border-radius: 50%; background: var(--accent); display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 800; color: #fff; }
+.yt-desc { font-size: 12px; color: #aaa; line-height: 1.5; display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; overflow: hidden; }
+.yt-tags-row { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 8px; }
+.yt-tag { background: #272727; color: #3EA6FF; font-size: 11px; padding: 2px 8px; border-radius: 3px; }
+
+/* Tabs */
+.tabs { display: flex; gap: 3px; background: var(--surface2); border: 1px solid var(--border); border-radius: var(--r); padding: 3px; margin-bottom: 18px; }
+.tab { padding: 6px 14px; border-radius: 7px; font-size: 13px; font-weight: 500; cursor: pointer; color: var(--text2); transition: all .15s; border: none; background: transparent; }
+.tab.active { background: var(--surface3); color: var(--text); }
+
+/* Spinner */
+.spin { display: inline-block; width: 16px; height: 16px; border: 2px solid currentColor; border-top-color: transparent; border-radius: 50%; animation: spin .7s linear infinite; }
+
+/* Toast */
+.toasts { position: fixed; top: 16px; right: 16px; z-index: 999; display: flex; flex-direction: column; gap: 8px; pointer-events: none; }
+.toast { background: var(--surface); border: 1px solid var(--border2); border-radius: var(--r); padding: 12px 16px; min-width: 280px; max-width: 380px; font-size: 13px; display: flex; align-items: flex-start; gap: 10px; animation: tslide .2s ease; box-shadow: 0 8px 32px rgba(0,0,0,.5); pointer-events: all; }
+.toast.success { border-left: 3px solid var(--green); }
+.toast.error { border-left: 3px solid var(--red); }
+.toast.info { border-left: 3px solid var(--accent); }
+@keyframes tslide { from { transform: translateX(110%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+
+.divider { border: none; border-top: 1px solid var(--border); margin: 18px 0; }
+.two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+.two-col.r3 { grid-template-columns: 3fr 2fr; }
+.copy-btn { cursor: pointer; }
+.copy-btn.copied { color: var(--green) !important; }
+
+/* Upload zone */
+.dropzone { border: 2px dashed var(--border2); border-radius: var(--r); padding: 28px; text-align: center; cursor: pointer; transition: all .2s; }
+.dropzone:hover { border-color: var(--accent); background: #6366F108; }
+.dropzone-icon { font-size: 32px; margin-bottom: 8px; }
+.dropzone-text { font-size: 14px; font-weight: 600; margin-bottom: 3px; }
+.dropzone-hint { font-size: 12px; color: var(--text2); }
+</style>
+</head>
+<body>
+
+<div class="layout">
+  <aside class="sidebar" id="sidebar"></aside>
+  <main class="main" id="main"></main>
+</div>
+<div class="toasts" id="toasts"></div>
+<div id="modal-root"></div>
+
+<script>
+// ── Config ────────────────────────────────────────────────────────────────────
+const API = 'http://localhost:5000/api';
+const CTA = 'https://spikesignals.com/';
+const DISCLAIMER = 'Market data, alerts, and signals are for informational and educational purposes only and are not financial advice.';
+
+// ── App State ─────────────────────────────────────────────────────────────────
+const state = {
+  page: 'dashboard',
+  platform: 'all',
+  statusFilter: 'all',
+  posts: [],
+  stats: {},
+  health: null,
+  modal: null,
+  selectedPost: null,
+  creating: { step: 1, platform: '', title: '', description: '', keywords: '', ytId: '', ytUrl: '' },
+  generated: null,
+  genError: null,
+  ytResults: [],
+  ytQuery: '',
+  activePreviewTab: 'content',
+};
+
+// ── Toast ─────────────────────────────────────────────────────────────────────
+function toast(msg, type = 'info', duration = 4500) {
+  const icons = { success: '✅', error: '❌', info: 'ℹ️' };
+  const el = document.createElement('div');
+  el.className = `toast ${type}`;
+  el.innerHTML = `<span>${icons[type]}</span><span style="flex:1">${msg}</span>`;
+  document.getElementById('toasts').appendChild(el);
+  setTimeout(() => el.remove(), duration);
+}
+
+// ── API Calls ─────────────────────────────────────────────────────────────────
+async function apiFetch(path, opts = {}) {
+  const r = await fetch(`${API}${path}`, {
+    headers: { 'Content-Type': 'application/json', ...opts.headers },
+    ...opts,
+  });
+  const data = await r.json().catch(() => ({ error: `HTTP ${r.status}` }));
+  if (!r.ok) throw Object.assign(new Error(data.error || `HTTP ${r.status}`), { detail: data.detail, hint: data.hint });
+  return data;
+}
+
+async function loadPosts() {
+  try {
+    const params = new URLSearchParams();
+    if (state.platform !== 'all') params.set('platform', state.platform);
+    if (state.statusFilter !== 'all') params.set('status', state.statusFilter);
+    const data = await apiFetch(`/posts?${params}`);
+    state.posts = data.posts || [];
+  } catch (e) { toast('Cannot reach backend — is it running on port 5000?', 'error'); }
+}
+
+async function loadStats() {
+  try { state.stats = await apiFetch('/posts/stats'); } catch {}
+}
+
+async function loadHealth() {
+  try { state.health = await apiFetch('/health'); } catch { state.health = null; }
+}
+
+async function updateStatus(id, status, extra = {}) {
+  try {
+    const data = await apiFetch(`/posts/${id}/status`, {
+      method: 'PATCH',
+      body: JSON.stringify({ status, ...extra }),
+    });
+    toast(
+      data.email?.sent ? `Status → ${status} · Email sent ✉️` : `Status → ${status}`,
+      'success'
+    );
+    if (!data.email?.sent && data.email?.reason) {
+      toast(`Email not sent: ${data.email.reason}`, 'error');
+    }
+    await loadPosts(); await loadStats();
+    if (state.selectedPost?._id === id) state.selectedPost = data.post;
+    render();
+  } catch (e) { toast(`Update failed: ${e.message}`, 'error'); }
+}
+
+async function deletePost(id) {
+  if (!confirm('Permanently delete this post?')) return;
+  try {
+    await apiFetch(`/posts/${id}`, { method: 'DELETE' });
+    toast('Post deleted', 'info');
+    closeModal();
+    await loadPosts(); await loadStats(); render();
+  } catch (e) { toast(`Delete failed: ${e.message}`, 'error'); }
+}
+
+// ── Helpers ───────────────────────────────────────────────────────────────────
+const PI = { youtube: '▶️', tiktok: '🎵', instagram: '📸' };
+const PC = { youtube: '#FF5555', tiktok: '#69C9D0', instagram: '#E1306C' };
+function ago(d) {
+  if (!d) return '';
+  const s = (Date.now() - new Date(d)) / 1000;
+  if (s < 60) return 'just now';
+  if (s < 3600) return `${Math.floor(s/60)}m ago`;
+  if (s < 86400) return `${Math.floor(s/3600)}h ago`;
+  return new Date(d).toLocaleDateString();
+}
+function pbadge(p) { return `<span class="pb ${p}">${PI[p]||'📱'} ${p}</span>`; }
+function sbadge(s) { return `<span class="badge s-${s}">${s.replace('_',' ')}</span>`; }
+function ytThumb(id) { return id ? `https://img.youtube.com/vi/${id}/maxresdefault.jpg` : ''; }
+function mediaUrl(f) { return f ? `${API.replace('/api','')}/media/${f}` : ''; }
+
+function copyText(text, btn) {
+  navigator.clipboard.writeText(text).then(() => {
+    const orig = btn.textContent;
+    btn.textContent = 'Copied!';
+    btn.classList.add('copied');
+    setTimeout(() => { btn.textContent = orig; btn.classList.remove('copied'); }, 1500);
+  });
+}
+
+// ── Config Banner ─────────────────────────────────────────────────────────────
+function renderConfigBanner() {
+  if (!state.health) return '';
+  const { integrations: I } = state.health;
+  const issues = [];
+  if (!I.ai?.configured) issues.push(['🤖 Anthropic AI', 'Set ANTHROPIC_API_KEY in .env (get from console.anthropic.com)']);
+  if (!I.email?.configured) issues.push(['📧 Email', 'Set EMAIL_USER + EMAIL_PASS in .env (use Gmail App Password)']);
+  if (!I.youtube?.searchConfigured) issues.push(['🔍 YouTube Search', 'Set YOUTUBE_API_KEY in .env (Google Cloud Console)']);
+  if (!I.youtube?.uploadReady) issues.push(['⬆️ YouTube Upload', 'Complete YouTube OAuth setup (see README)']);
+  if (I.database?.status !== 'connected') issues.push(['🗄️ MongoDB', 'Add your server IP to MongoDB Atlas → Network Access']);
+  if (!issues.length) return '';
+  return `<div class="config-banner">
+    <div class="config-banner-title">⚠️ ${issues.length} integration${issues.length>1?'s':''} not configured — add to .env to activate</div>
+    ${issues.map(([name, hint]) => `<div class="config-item"><span>${name}</span><span style="color:#9CA3AF">— ${hint}</span></div>`).join('')}
+  </div>`;
+}
+
+// ── Sidebar ───────────────────────────────────────────────────────────────────
+function renderSidebar() {
+  const nr = state.posts.filter(p => p.status === 'needs_review').length;
+  const fa = state.posts.filter(p => p.status === 'failed').length;
+  const nav = (page, icon, label, badge) => `
+    <button class="nav-item ${state.page===page?'active':''}" onclick="nav('${page}')">
+      <span>${icon}</span>${label}
+      ${badge ? `<span class="nav-badge ${badge.type||''}">${badge.n}</span>` : ''}
+    </button>`;
+  const plat = (id, label, dotStyle, actClass) => `
+    <button class="plat-btn ${state.platform===id?actClass:''}" onclick="setPlatform('${id}')">
+      <span class="dot" style="${dotStyle}"></span>${label}
+    </button>`;
+
+  return `
+  <div class="logo"><div class="logo-name">⚡ SpikeSignals</div><div class="logo-sub">Command Center</div></div>
+  <div class="nav">
+    <div class="nav-sec">Workspace</div>
+    ${nav('dashboard','📊','Dashboard')}
+    ${nav('queue','📋','Content Queue', nr ? {n:nr} : null)}
+    ${nav('approved','✅','Approved')}
+    ${nav('calendar','📅','Calendar')}
+    <div class="nav-sec">Tools</div>
+    <button class="nav-item" onclick="openCreate()"><span>✨</span>AI Draft Creator</button>
+    ${nav('failed','⚠️','Failed Posts', fa ? {n:fa,type:'red'} : null)}
+  </div>
+  <div class="plat-section">
+    ${plat('all','All Platforms','background:#6366F1','act-all')}
+    ${plat('youtube','YouTube','background:#FF0000','act-yt')}
+    ${plat('tiktok','TikTok','background:linear-gradient(135deg,#EE1D52,#69C9D0)','act-tt')}
+    ${plat('instagram','Instagram','background:linear-gradient(135deg,#E1306C,#FCAF45)','act-ig')}
+  </div>`;
+}
+
+// ── Post Card ─────────────────────────────────────────────────────────────────
+function renderCard(post) {
+  const thumb = mediaUrl(post.thumbnailPath) || ytThumb(post.youtubeVideoId);
+  return `<div class="post-card" onclick="openView('${post._id}')">
+    <div class="post-thumb">
+      ${thumb
+        ? `<img src="${thumb}" alt="" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"><div class="post-thumb-ph" style="display:none">${PI[post.platform]}</div>`
+        : `<div class="post-thumb-ph">${PI[post.platform]}</div>`}
+      <div class="post-overlay">${pbadge(post.platform)} ${sbadge(post.status)}</div>
+    </div>
+    <div class="post-body">
+      <div class="post-title">${post.title}</div>
+      <div class="post-cap">${post.caption || post.description || 'No caption'}</div>
+      <div class="post-foot">
+        <span class="post-date">${ago(post.createdAt)}</span>
+        <div style="display:flex;gap:5px" onclick="event.stopPropagation()">
+          ${post.status==='needs_review' ? `<button class="btn btn-sm btn-success" onclick="openView('${post._id}')">Review</button>` : ''}
+          ${post.status==='approved' ? `<button class="btn btn-sm btn-secondary" onclick="openView('${post._id}')">📅 Plan</button>` : ''}
+        </div>
+      </div>
+    </div>
+  </div>`;
+}
+
+// ── Dashboard ─────────────────────────────────────────────────────────────────
+function renderDashboard() {
+  const S = state.stats;
+  const byStatus = {};
+  state.posts.forEach(p => { byStatus[p.status] = (byStatus[p.status]||0)+1; });
+  const statuses = ['draft','needs_review','approved','planned','posted','failed','cancelled'];
+  const statusColors = { draft:'#6B7280', needs_review:'#F59E0B', approved:'#10B981', planned:'#3B82F6', posted:'#8B5CF6', failed:'#EF4444', cancelled:'#6B7280' };
+  return `
+  <div class="topbar">
+    <div><div class="page-title">Dashboard</div><div class="page-sub">SpikeSignals Social Media Command Center</div></div>
+    <button class="btn btn-primary" onclick="openCreate()">✨ New AI Draft</button>
+  </div>
+  ${renderConfigBanner()}
+  <div class="stats">
+    <div class="stat hi"><div class="stat-n">${S.total||0}</div><div class="stat-l">Total Posts</div></div>
+    <div class="stat"><div class="stat-n" style="color:#F59E0B">${byStatus.needs_review||0}</div><div class="stat-l">Needs Review</div></div>
+    <div class="stat"><div class="stat-n" style="color:#10B981">${byStatus.approved||0}</div><div class="stat-l">Approved</div></div>
+    <div class="stat"><div class="stat-n" style="color:#3B82F6">${byStatus.planned||0}</div><div class="stat-l">Planned</div></div>
+    <div class="stat"><div class="stat-n" style="color:#8B5CF6">${byStatus.posted||0}</div><div class="stat-l">Posted</div></div>
+    <div class="stat"><div class="stat-n" style="color:#EF4444">${byStatus.failed||0}</div><div class="stat-l">Failed</div></div>
+  </div>
+  <div class="two-col" style="margin-bottom:22px">
+    <div class="card">
+      <div class="card-head"><span class="card-title">Platform Breakdown</span></div>
+      <div class="card-body">
+        ${['youtube','tiktok','instagram'].map(p => {
+          const n = state.posts.filter(x=>x.platform===p).length;
+          const pct = S.total > 0 ? Math.round(n/S.total*100) : 0;
+          return `<div style="margin-bottom:14px">
+            <div style="display:flex;justify-content:space-between;margin-bottom:5px">
+              <span style="font-size:13px;font-weight:600">${PI[p]} ${p}</span>
+              <span style="font-size:12px;color:var(--text2)">${n} posts</span>
+            </div>
+            <div style="background:var(--surface3);border-radius:4px;height:5px">
+              <div style="height:100%;width:${pct}%;background:${PC[p]};border-radius:4px;transition:width .5s"></div>
+            </div></div>`;
+        }).join('')}
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-head"><span class="card-title">Status Pipeline</span></div>
+      <div class="card-body">
+        ${statuses.map(s => `<div style="display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid var(--border)">
+          ${sbadge(s)}<span style="font-size:15px;font-weight:800;color:${statusColors[s]}">${byStatus[s]||0}</span></div>`).join('')}
+      </div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-head"><span class="card-title">Recent Posts</span><button class="btn btn-secondary btn-sm" onclick="nav('queue')">View All</button></div>
+    <div class="card-body">
+      ${state.posts.length === 0
+        ? `<div class="empty"><div class="empty-icon">📭</div><div class="empty-title">No posts yet</div><div class="empty-sub">Create your first AI-generated draft to get started.</div><button class="btn btn-primary" onclick="openCreate()">✨ Create AI Draft</button></div>`
+        : `<div class="posts-grid">${state.posts.slice(0,6).map(renderCard).join('')}</div>`}
+    </div>
+  </div>`;
+}
+
+// ── Queue ─────────────────────────────────────────────────────────────────────
+function renderQueue() {
+  let posts = state.posts;
+  if (state.statusFilter !== 'all') posts = posts.filter(p => p.status === state.statusFilter);
+  const statuses = ['all','draft','needs_review','approved','planned','posted','failed','cancelled'];
+  return `
+  <div class="topbar">
+    <div><div class="page-title">Content Queue</div><div class="page-sub">${posts.length} posts</div></div>
+    <button class="btn btn-primary" onclick="openCreate()">✨ New AI Draft</button>
+  </div>
+  ${renderConfigBanner()}
+  <div class="filters">
+    <select class="fsel" onchange="state.statusFilter=this.value;render()">
+      ${statuses.map(s => `<option value="${s}" ${state.statusFilter===s?'selected':''}>${s==='all'?'All Statuses':s.replace('_',' ')}</option>`).join('')}
+    </select>
+    <select class="fsel" onchange="setPlatform(this.value)">
+      <option value="all">All Platforms</option>
+      <option value="youtube" ${state.platform==='youtube'?'selected':''}>▶️ YouTube</option>
+      <option value="tiktok" ${state.platform==='tiktok'?'selected':''}>🎵 TikTok</option>
+      <option value="instagram" ${state.platform==='instagram'?'selected':''}>📸 Instagram</option>
+    </select>
+  </div>
+  ${posts.length === 0
+    ? `<div class="empty"><div class="empty-icon">📭</div><div class="empty-title">No posts found</div><div class="empty-sub">Adjust your filters or create a new AI draft.</div><button class="btn btn-primary" onclick="openCreate()">✨ New Draft</button></div>`
+    : `<div class="posts-grid">${posts.map(renderCard).join('')}</div>`}`;
+}
+
+// ── Calendar ──────────────────────────────────────────────────────────────────
+function renderCalendar() {
+  const planned = state.posts.filter(p => p.plannedDate).sort((a,b) => new Date(a.plannedDate)-new Date(b.plannedDate));
+  return `
+  <div class="topbar"><div><div class="page-title">Content Calendar</div><div class="page-sub">Planned & Scheduled Posts</div></div></div>
+  ${planned.length === 0
+    ? `<div class="empty"><div class="empty-icon">📅</div><div class="empty-title">Nothing scheduled</div><div class="empty-sub">Approve posts and set a planned date to see them here.</div></div>`
+    : `<div class="card"><div class="card-body">
+      ${planned.map(p => {
+        const d = new Date(p.plannedDate);
+        return `<div style="display:flex;align-items:center;gap:14px;padding:14px 0;border-bottom:1px solid var(--border);cursor:pointer" onclick="openView('${p._id}')">
+          <div style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:8px 14px;text-align:center;min-width:54px;flex-shrink:0">
+            <div style="font-size:11px;color:var(--text2)">${d.toLocaleString('default',{month:'short'})}</div>
+            <div style="font-size:22px;font-weight:800">${d.getDate()}</div>
+          </div>
+          <div style="flex:1;min-width:0">
+            <div style="font-size:14px;font-weight:600;margin-bottom:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${p.title}</div>
+            <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap">${pbadge(p.platform)} ${sbadge(p.status)} <span style="font-size:11px;color:var(--text2)">${d.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})}</span></div>
+          </div>
+          <div style="display:flex;gap:6px;flex-shrink:0" onclick="event.stopPropagation()">
+            ${p.status==='planned' ? `<button class="btn btn-sm btn-success" onclick="updateStatus('${p._id}','posted')">✅ Mark Posted</button>` : ''}
+            <button class="btn btn-sm btn-danger" onclick="updateStatus('${p._id}','cancelled')">Cancel</button>
+          </div>
+        </div>`;
+      }).join('')}
+    </div></div>`}`;
+}
+
+// ── Previews ──────────────────────────────────────────────────────────────────
+function renderYTPreview(post) {
+  const vid = post.youtubeVideoId;
+  const thumb = mediaUrl(post.thumbnailPath) || ytThumb(vid);
+  const tags = (post.hashtags||[]).slice(0,6);
+  return `<div class="yt-embed">
+    <div class="yt-video">
+      ${vid ? `<iframe src="https://www.youtube.com/embed/${vid}" allowfullscreen></iframe>`
+        : thumb ? `<img src="${thumb}" style="width:100%;height:100%;object-fit:cover">`
+        : `<div class="yt-ph">▶️</div>`}
+    </div>
+    <div class="yt-meta">
+      <div class="yt-title">${post.title||'Video Title'}</div>
+      <div class="yt-ch"><div class="yt-av">S</div> SpikeSignals <span style="color:#555">• Just now</span></div>
+      <div class="yt-desc">${(post.caption||'').substring(0,300)}</div>
+      ${tags.length ? `<div class="yt-tags-row">${tags.map(t=>`<span class="yt-tag">#${t}</span>`).join('')}</div>` : ''}
+    </div>
+  </div>`;
+}
+
+function renderTTPreview(post) {
+  const thumb = mediaUrl(post.thumbnailPath) || ytThumb(post.youtubeVideoId);
+  const cap = (post.caption||'').substring(0,140);
+  const tags = (post.hashtags||[]).slice(0,5).map(t=>`#${t}`).join(' ');
+  return `<div class="preview-wrap">
+    <div class="tt-phone"><div class="tt-screen">
+      ${thumb ? `<img src="${thumb}" alt="">` : '🎵'}
+      <div class="tt-grad"></div>
+      <div class="tt-bottom">
+        <div class="tt-user"><div style="width:18px;height:18px;border-radius:50%;background:linear-gradient(135deg,#EE1D52,#69C9D0);display:flex;align-items:center;justify-content:center;font-size:8px;color:#fff;font-weight:800">S</div>@spikesignals</div>
+        <div class="tt-cap">${cap}</div>
+        <div class="tt-tags">${tags}</div>
+      </div>
+      <div class="tt-side">
+        <div class="tt-act"><div class="tt-act-i">❤️</div><div class="tt-act-c">0</div></div>
+        <div class="tt-act"><div class="tt-act-i">💬</div><div class="tt-act-c">0</div></div>
+        <div class="tt-act"><div class="tt-act-i">↗️</div><div class="tt-act-c">0</div></div>
+        <div class="tt-disc"></div>
+      </div>
+    </div></div>
+  </div>`;
+}
+
+function renderIGPreview(post) {
+  const thumb = mediaUrl(post.thumbnailPath) || ytThumb(post.youtubeVideoId);
+  const cap = (post.caption||'').substring(0,120);
+  const tags = (post.hashtags||[]).slice(0,6).map(t=>`#${t}`).join(' ');
+  return `<div class="preview-wrap">
+    <div class="ig-phone"><div class="ig-screen">
+      <div class="ig-story"><div class="ig-prog"></div></div>
+      ${thumb ? `<img src="${thumb}" alt="">` : '📸'}
+      <div class="ig-grad"></div>
+      <div class="ig-bottom">
+        <div class="ig-user">spikesignals <span style="border:1px solid #fff;border-radius:3px;font-size:8px;padding:1px 4px;margin-left:4px">Follow</span></div>
+        <div class="ig-cap">${cap}</div>
+        <div class="ig-tags">${tags}</div>
+      </div>
+      <div class="ig-side">
+        <div class="ig-act">❤️<div class="ig-act-c">0</div></div>
+        <div class="ig-act">💬<div class="ig-act-c">0</div></div>
+        <div class="ig-act">➤<div class="ig-act-c">0</div></div>
+        <div class="ig-act">🔖</div>
+      </div>
+    </div></div>
+  </div>`;
+}
+
+function renderPreview(post) {
+  if (post.platform === 'youtube') return renderYTPreview(post);
+  if (post.platform === 'tiktok') return renderTTPreview(post);
+  if (post.platform === 'instagram') return renderIGPreview(post);
+  return '';
+}
+
+// ── View Modal ────────────────────────────────────────────────────────────────
+function renderViewModal(post) {
+  const tab = state.activePreviewTab;
+  const contentPane = `
+    <div class="two-col r3">
+      <div>
+        <div class="cbox">
+          <div class="cbox-label">Caption</div>
+          <div class="cbox-text">${post.caption||'No caption generated'}</div>
+          <button class="btn btn-secondary btn-sm copy-btn" style="margin-top:10px" onclick="copyText(${JSON.stringify(post.caption||'')}, this)">📋 Copy Caption</button>
+        </div>
+        <div class="cbox">
+          <div class="cbox-label">Hashtags (${post.hashtags?.length||0})</div>
+          <div class="tag-cloud">${(post.hashtags||[]).map(h=>`<span class="tag">#${h}</span>`).join('')}</div>
+          <button class="btn btn-secondary btn-sm copy-btn" style="margin-top:10px" onclick="copyText('${(post.hashtags||[]).map(h=>'#'+h).join(' ')}',this)">📋 Copy Hashtags</button>
+        </div>
+        <div class="disclaimer" style="margin-bottom:10px">⚠️ ${DISCLAIMER}</div>
+        <a class="cta-link" href="${CTA}" target="_blank" rel="noopener">🔗 ${CTA}</a>
+      </div>
+      <div>
+        <div class="cbox">
+          <div class="cbox-label">Post Details</div>
+          <table style="width:100%;border-collapse:collapse">
+            ${[
+              ['Platform', pbadge(post.platform)],
+              ['Status', sbadge(post.status)],
+              ['Created', new Date(post.createdAt).toLocaleString()],
+              post.plannedDate && ['Planned', new Date(post.plannedDate).toLocaleString()],
+              post.postedAt && ['Posted', new Date(post.postedAt).toLocaleString()],
+              post.publishedUrl && ['Live URL', `<a href="${post.publishedUrl}" target="_blank" style="color:var(--accent2)">${post.publishedUrl.substring(0,40)}…</a>`],
+              post.adminNotes && ['Notes', post.adminNotes],
+              post.lastEmailStatus && ['Last Email', post.lastEmailStatus],
+            ].filter(Boolean).map(([k,v])=>`<tr>
+              <td style="padding:8px 0;border-bottom:1px solid var(--border);color:var(--text2);font-size:12px;width:90px;vertical-align:top">${k}</td>
+              <td style="padding:8px 0;border-bottom:1px solid var(--border);font-size:12px">${v}</td></tr>`).join('')}
+          </table>
+        </div>
+        ${post.failureReason ? `<div class="error-box"><div class="error-title">❌ Failure Reason</div><div class="error-detail">${post.failureReason}</div></div>` : ''}
+        ${post.complianceFlags?.length
+          ? `<div class="comp-warn"><div class="comp-warn-title">⚠️ Compliance Flags</div>${post.complianceFlags.map(f=>`<span class="comp-flag">${f}</span>`).join('')}</div>`
+          : `<div class="comp-ok">✅ Compliance check passed</div>`}
+      </div>
+    </div>`;
+
+  const previewPane = `<div>${renderPreview(post)}</div>`;
+
+  const schedulePane = `
+    <div class="two-col">
+      <div class="card"><div class="card-head"><span class="card-title">📅 Set Planned Date</span></div>
+        <div class="card-body">
+          <div class="fg"><label class="fl">Date</label><input type="date" class="fi" id="plan-date" value="${post.plannedDate?new Date(post.plannedDate).toISOString().split('T')[0]:''}"></div>
+          <div class="fg"><label class="fl">Time</label><input type="time" class="fi" id="plan-time" value="${post.plannedDate?new Date(post.plannedDate).toTimeString().slice(0,5):'09:00'}"></div>
+          <div class="fg"><label class="fl">Admin Notes</label><textarea class="fi" id="plan-notes" rows="2">${post.adminNotes||''}</textarea></div>
+          <button class="btn btn-primary" onclick="savePlan('${post._id}')">💾 Save Plan</button>
+        </div>
+      </div>
+      <div class="card"><div class="card-head"><span class="card-title">Quick Actions</span></div>
+        <div class="card-body" style="display:flex;flex-direction:column;gap:8px">
+          ${post.status==='planned' ? `<button class="btn btn-success" onclick="updateStatus('${post._id}','posted').then(()=>closeModal())">✅ Mark as Posted</button>` : ''}
+          ${post.status==='planned' ? `<button class="btn btn-danger" onclick="updateStatus('${post._id}','cancelled').then(()=>closeModal())">🚫 Cancel Plan</button>` : ''}
+          ${post.status==='failed' ? `<button class="btn btn-secondary" onclick="updateStatus('${post._id}','needs_review').then(()=>closeModal())">♻️ Resubmit for Review</button>` : ''}
+          ${(post.platform==='youtube' && post.status==='approved') ? `<hr class="divider"><button class="btn btn-primary" onclick="uploadToYT('${post._id}')">⬆️ Upload to YouTube</button>` : ''}
+        </div>
+      </div>
+    </div>`;
+
+  const actionBtns = `
+    ${['draft','needs_review'].includes(post.status) ? `<button class="btn btn-success" onclick="updateStatus('${post._id}','approved').then(()=>{ loadPosts();loadStats();render(); })">✅ Approve</button>` : ''}
+    ${['draft','needs_review'].includes(post.status) ? `<button class="btn btn-danger btn-sm" onclick="updateStatus('${post._id}','cancelled').then(()=>closeModal())">❌ Reject</button>` : ''}
+    ${post.status==='approved' ? `<button class="btn btn-secondary btn-sm" onclick="switchTab('schedule')">📅 Schedule</button>` : ''}
+    <button class="btn btn-danger btn-sm" onclick="deletePost('${post._id}')">🗑 Delete</button>`;
+
+  return `<div class="overlay" onclick="if(event.target===this)closeModal()">
+    <div class="modal modal-lg">
+      <div class="modal-head">
+        <div>
+          <div class="modal-title">${post.title}</div>
+          <div style="display:flex;gap:6px;margin-top:5px">${pbadge(post.platform)} ${sbadge(post.status)}</div>
+        </div>
+        <button class="x-btn" onclick="closeModal()">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="tabs">
+          <button class="tab ${tab==='content'?'active':''}" onclick="switchTab('content')">📄 Content</button>
+          <button class="tab ${tab==='preview'?'active':''}" onclick="switchTab('preview')">👁 Preview</button>
+          <button class="tab ${tab==='schedule'?'active':''}" onclick="switchTab('schedule')">📅 Schedule</button>
+        </div>
+        ${tab==='content' ? contentPane : tab==='preview' ? previewPane : schedulePane}
+      </div>
+      <div class="modal-foot">
+        <button class="btn btn-secondary" onclick="closeModal()">Close</button>
+        ${actionBtns}
+      </div>
+    </div>
+  </div>`;
+}
+
+// ── Create Modal ──────────────────────────────────────────────────────────────
+function renderCreateModal() {
+  const C = state.creating;
+  const step = C.step;
+
+  const step1 = `
+    <div class="fg"><div class="fl">Select Platform</div>
+      <div class="plat-grid">
+        ${[['youtube','▶️','YouTube','Long-form video'],['tiktok','🎵','TikTok','Short-form reels'],['instagram','📸','Instagram','Reels & Feed']].map(([p,i,n,d])=>`
+          <div class="plat-card ${C.platform===p?'sel':''}" onclick="C('platform','${p}')">
+            <div class="pi">${i}</div><div class="pn">${n}</div><div class="pd">${d}</div>
+          </div>`).join('')}
+      </div>
+    </div>
+    <div class="fg"><label class="fl">Video Title *</label>
+      <input class="fi" placeholder="Enter video title or topic" value="${C.title}" oninput="C('title',this.value)">
+    </div>
+    <div class="fg"><label class="fl">Description / Context</label>
+      <textarea class="fi" rows="3" placeholder="Key topics, what the video covers..." oninput="C('description',this.value)">${C.description}</textarea>
+    </div>
+    <div class="fg"><label class="fl">Keywords (comma-separated)</label>
+      <input class="fi" placeholder="trading, signals, SPY, MACD..." value="${C.keywords}" oninput="C('keywords',this.value)">
+    </div>
+    <div class="fg"><label class="fl">YouTube Video URL (optional)</label>
+      <div style="display:flex;gap:8px">
+        <input class="fi" placeholder="https://youtube.com/watch?v=..." value="${C.ytUrl}" oninput="C('ytUrl',this.value);extractYtId()">
+        <button class="btn btn-secondary" onclick="openYTSearch()">🔍 Search</button>
+      </div>
+      ${C.ytId ? `<div class="fhint" style="color:var(--green)">✓ Video ID: ${C.ytId}</div>` : ''}
+    </div>`;
+
+  const step2 = `<div style="text-align:center;padding:50px">
+    <div class="spin" style="width:42px;height:42px;border-width:3px;margin:0 auto 16px"></div>
+    <div style="font-size:16px;font-weight:700;margin-bottom:6px">Generating with Claude AI...</div>
+    <div style="font-size:13px;color:var(--text2)">Creating optimised ${C.platform} content · This takes a few seconds</div>
+  </div>`;
+
+  const step3 = state.genError
+    ? `<div class="error-box">
+        <div class="error-title">❌ AI Generation Failed</div>
+        <div class="error-detail">${state.genError.message}</div>
+        ${state.genError.hint ? `<div class="error-hint">💡 ${state.genError.hint}</div>` : ''}
+        <div class="error-hint" style="margin-top:8px">Check that ANTHROPIC_API_KEY is set correctly in your .env file and the server is restarted.</div>
+      </div>`
+    : state.generated
+    ? `<div>
+        ${state.generated.complianceFlags?.length
+          ? `<div class="comp-warn" style="margin-bottom:14px"><div class="comp-warn-title">⚠️ Compliance Flags — edit caption to remove these terms</div>${state.generated.complianceFlags.map(f=>`<span class="comp-flag">${f}</span>`).join('')}</div>`
+          : `<div class="comp-ok" style="margin-bottom:14px">✅ Compliance check passed — no risky terms detected</div>`}
+        <div class="fg"><label class="fl">Caption (edit before approving)</label>
+          <textarea class="fi" rows="7" style="font-size:12px;line-height:1.6" id="edit-cap" oninput="state.generated.caption=this.value">${state.generated.caption}</textarea>
+        </div>
+        <div class="fg"><label class="fl">Hashtags (comma-separated, no #)</label>
+          <input class="fi" id="edit-tags" value="${(state.generated.hashtags||[]).join(', ')}" oninput="state.generated.hashtags=this.value.split(',').map(h=>h.trim().replace(/^#/,''))">
+          <div class="fhint">${state.generated.hashtags?.length||0} hashtags</div>
+        </div>
+        <div class="disclaimer" style="margin-bottom:12px">⚠️ <strong>Disclaimer auto-included:</strong> ${DISCLAIMER}</div>
+        <a class="cta-link" href="${CTA}" target="_blank" rel="noopener" style="margin-bottom:16px;display:inline-flex">🔗 ${CTA}</a>
+        <hr class="divider">
+        <div style="font-size:13px;font-weight:700;margin-bottom:12px">Platform Preview</div>
+        ${renderPreview({ ...state.generated.post, caption: state.generated.caption, hashtags: state.generated.hashtags })}
+      </div>`
+    : '';
+
+  const footBtns = step === 1
+    ? `<button class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+       <button class="btn btn-primary" ${!C.platform||!C.title?'disabled':''} onclick="doGenerate()">✨ Generate AI Draft →</button>`
+    : step === 3 && !state.genError && state.generated
+    ? `<button class="btn btn-secondary" onclick="state.creating.step=1;renderModal()">← Back</button>
+       <button class="btn btn-secondary" onclick="saveStatus('draft')">Save as Draft</button>
+       <button class="btn btn-primary" onclick="saveStatus('needs_review')">Submit for Review →</button>`
+    : step === 3 && state.genError
+    ? `<button class="btn btn-secondary" onclick="state.creating.step=1;state.genError=null;renderModal()">← Try Again</button>`
+    : '';
+
+  return `<div class="overlay" onclick="if(event.target===this)closeModal()">
+    <div class="modal modal-lg">
+      <div class="modal-head">
+        <div>
+          <div class="modal-title">✨ AI Draft Creator</div>
+          <div style="font-size:12px;color:var(--text2);margin-top:2px">Step ${step} of 3: ${step===1?'Configure':step===2?'Generating…':'Review & Edit'}</div>
+        </div>
+        <button class="x-btn" onclick="closeModal()">✕</button>
+      </div>
+      <div class="modal-body">${step===1?step1:step===2?step2:step3}</div>
+      <div class="modal-foot">${footBtns}</div>
+    </div>
+  </div>`;
+}
+
+function renderYTSearchModal() {
+  return `<div class="overlay" onclick="if(event.target===this){state.modal='create';renderModal()}">
+    <div class="modal">
+      <div class="modal-head">
+        <div class="modal-title">🔍 Search YouTube Videos</div>
+        <button class="x-btn" onclick="state.modal='create';renderModal()">✕</button>
+      </div>
+      <div class="modal-body">
+        <div style="display:flex;gap:8px;margin-bottom:16px">
+          <input class="fi" id="yt-q" placeholder="Search trading signals, markets…" value="${state.ytQuery}" onkeydown="if(event.key==='Enter')doYTSearch()">
+          <button class="btn btn-primary" onclick="doYTSearch()">Search</button>
+        </div>
+        ${state.ytResults.length === 0
+          ? `<div class="empty"><div class="empty-icon">🎬</div><div class="empty-title">Search YouTube</div><div class="empty-sub">Find a video to base your post on.</div></div>`
+          : state.ytResults.map(v=>`
+            <div style="display:flex;gap:12px;padding:12px;border:1px solid var(--border);border-radius:8px;margin-bottom:8px;cursor:pointer" onclick="selectYT('${v.videoId}','${encodeURIComponent(v.title)}')">
+              <img src="${v.thumbnail}" style="width:120px;height:68px;object-fit:cover;border-radius:6px;flex-shrink:0" onerror="this.style.display='none'">
+              <div><div style="font-size:13px;font-weight:600;margin-bottom:4px;line-height:1.4">${v.title}</div>
+              <div style="font-size:11px;color:var(--text2)">${v.channelTitle} · ${ago(v.publishedAt)}</div></div>
+            </div>`).join('')}
+      </div>
+    </div>
+  </div>`;
+}
+
+// ── Modal Manager ─────────────────────────────────────────────────────────────
+function renderModal() {
+  const root = document.getElementById('modal-root');
+  if (!state.modal) { root.innerHTML = ''; return; }
+  if (state.modal === 'view' && state.selectedPost) root.innerHTML = renderViewModal(state.selectedPost);
+  else if (state.modal === 'create') root.innerHTML = renderCreateModal();
+  else if (state.modal === 'yt-search') root.innerHTML = renderYTSearchModal();
+  else root.innerHTML = '';
+}
+function closeModal() { state.modal = null; renderModal(); }
+
+// ── Page Router ───────────────────────────────────────────────────────────────
+function renderPage() {
+  if (state.page === 'dashboard') return renderDashboard();
+  if (state.page === 'queue') return renderQueue();
+  if (state.page === 'approved') { state.statusFilter = 'approved'; return renderQueue(); }
+  if (state.page === 'failed') { state.statusFilter = 'failed'; return renderQueue(); }
+  if (state.page === 'calendar') return renderCalendar();
+  return renderDashboard();
+}
+
+function render() {
+  document.getElementById('sidebar').innerHTML = renderSidebar();
+  document.getElementById('main').innerHTML = renderPage();
+  renderModal();
+}
+
+// ── Actions ───────────────────────────────────────────────────────────────────
+window.nav = (page) => { state.page = page; state.statusFilter = 'all'; render(); };
+window.setPlatform = async (p) => { state.platform = p; await loadPosts(); render(); };
+window.C = (k, v) => { state.creating[k] = v; renderModal(); }; // create field updater
+window.switchTab = (t) => { state.activePreviewTab = t; renderModal(); };
+window.updateStatus = updateStatus;
+window.deletePost = deletePost;
+window.closeModal = closeModal;
+
+window.openCreate = () => {
+  state.modal = 'create';
+  state.creating = { step: 1, platform: '', title: '', description: '', keywords: '', ytId: '', ytUrl: '' };
+  state.generated = null;
+  state.genError = null;
+  renderModal();
+};
+
+window.openView = async (id) => {
+  try {
+    state.selectedPost = await apiFetch(`/posts/${id}`);
+    state.modal = 'view';
+    state.activePreviewTab = 'content';
+    renderModal();
+  } catch (e) { toast('Could not load post', 'error'); }
+};
+
+window.openYTSearch = () => { state.modal = 'yt-search'; renderModal(); };
+
+window.doYTSearch = async () => {
+  const q = document.getElementById('yt-q')?.value;
+  if (!q) return;
+  state.ytQuery = q;
+  try {
+    const data = await apiFetch(`/youtube/search?q=${encodeURIComponent(q)}`);
+    state.ytResults = data.videos || [];
+  } catch (e) {
+    toast(`YouTube search failed: ${e.message}`, 'error');
+    state.ytResults = [];
+  }
+  renderModal();
+};
+
+window.selectYT = (id, encodedTitle) => {
+  state.creating.ytId = id;
+  state.creating.ytUrl = `https://www.youtube.com/watch?v=${id}`;
+  if (!state.creating.title) state.creating.title = decodeURIComponent(encodedTitle);
+  state.modal = 'create';
+  renderModal();
+  toast('Video selected', 'success');
+};
+
+window.extractYtId = () => {
+  const url = state.creating.ytUrl;
+  const m = url.match(/[?&]v=([^&]+)/) || url.match(/youtu\.be\/([^?]+)/);
+  if (m) { state.creating.ytId = m[1]; renderModal(); }
+};
+
+window.doGenerate = async () => {
+  const C = state.creating;
+  state.creating.step = 2; state.genError = null; renderModal();
+  try {
+    const data = await apiFetch('/posts/generate', {
+      method: 'POST',
+      body: JSON.stringify({
+        platform: C.platform, title: C.title, description: C.description,
+        keywords: C.keywords.split(',').map(k=>k.trim()).filter(Boolean),
+        youtubeVideoId: C.ytId || null, youtubeVideoUrl: C.ytUrl || null,
+      }),
+    });
+    state.generated = { ...data.aiContent, post: data.post, caption: data.post.caption, hashtags: data.post.hashtags, complianceFlags: data.compliance?.flags||[] };
+    state.creating.step = 3;
+    toast('AI draft created ✅', 'success');
+    if (data.email?.sent) toast(`Review notification sent to ${data.email.to||'admin'}`, 'info');
+    else if (data.email) toast('Note: Email not sent — configure EMAIL_USER + EMAIL_PASS in .env', 'error');
+  } catch (e) {
+    state.genError = e;
+    state.creating.step = 3;
+    toast(`AI generation failed: ${e.message}`, 'error');
+  }
+  renderModal();
+};
+
+window.saveStatus = async (status) => {
+  if (!state.generated?.post?._id) return;
+  try {
+    // Update caption/hashtags in case admin edited them
+    await apiFetch(`/posts/${state.generated.post._id}`, {
+      method: 'PUT',
+      body: JSON.stringify({ caption: state.generated.caption, hashtags: state.generated.hashtags }),
+    });
+    await updateStatus(state.generated.post._id, status);
+    closeModal();
+    await loadPosts(); await loadStats(); render();
+  } catch (e) { toast(`Save failed: ${e.message}`, 'error'); }
+};
+
+window.savePlan = async (id) => {
+  const dateEl = document.getElementById('plan-date');
+  const timeEl = document.getElementById('plan-time');
+  const notesEl = document.getElementById('plan-notes');
+  if (!dateEl?.value) { toast('Please select a date', 'error'); return; }
+  const dt = new Date(`${dateEl.value}T${timeEl?.value||'09:00'}:00`);
+  await updateStatus(id, 'planned', {
+    plannedDate: dt.toISOString(),
+    adminNotes: notesEl?.value || undefined,
+  });
+  closeModal();
+};
+
+window.uploadToYT = async (id) => {
+  if (!confirm('Upload this video to YouTube? Make sure YT_REFRESH_TOKEN is set in .env.')) return;
+  try {
+    toast('Uploading to YouTube…', 'info');
+    const data = await apiFetch(`/youtube/upload/${id}`, { method: 'POST', body: JSON.stringify({ privacyStatus: 'public' }) });
+    toast(`✅ Published! ${data.youtube?.url}`, 'success', 8000);
+    await openView(id);
+    await loadPosts(); await loadStats(); render();
+  } catch (e) { toast(`YouTube upload failed: ${e.message}`, 'error', 8000); }
+};
+
+// ── Init ──────────────────────────────────────────────────────────────────────
+async function init() {
+  await Promise.all([loadPosts(), loadStats(), loadHealth()]);
+  render();
+  setInterval(async () => { await Promise.all([loadPosts(), loadStats()]); render(); }, 30_000);
+}
+
+init();
+</script>
+</body>
+</html>

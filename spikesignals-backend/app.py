@@ -6,6 +6,8 @@ from ai_service import generate_hashtags
 from pydantic import BaseModel
 from youtube_service import upload_video, get_trending_videos
 from pydantic import BaseModel
+from instagram_service import publish_video
+from tiktok_service import upload_video
 import os
 
 app = FastAPI()
@@ -96,3 +98,19 @@ def trending_videos():
         "status": "success",
         "videos": videos
     }
+@app.post("/publish-instagram")
+def publish_instagram():
+    result = publish_video(
+        "https://your-public-video-url.mp4",
+        "Generated caption"
+    )
+    return result
+
+
+@app.post("/publish-tiktok")
+def publish_tiktok():
+    result = upload_video(
+        "uploads/video.mp4",
+        "Generated title"
+    )
+    return result
