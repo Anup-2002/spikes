@@ -1,21 +1,33 @@
+import os
+import pickle
+
 from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
 from googleapiclient.http import MediaFileUpload
-import os
-import pickle
+
 
 SCOPES = [
     "https://www.googleapis.com/auth/youtube",
     "https://www.googleapis.com/auth/youtube.upload"
 ]
+
+
 def get_youtube_service():
+
     creds = None
 
+    if not os.path.exists("client_secret.json"):
+        raise FileNotFoundError(
+            "client_secret.json not found"
+        )
+
     if os.path.exists("token.pickle"):
+
         with open("token.pickle", "rb") as token:
             creds = pickle.load(token)
 
     if not creds:
+
         flow = InstalledAppFlow.from_client_secrets_file(
             "client_secret.json",
             SCOPES
@@ -26,9 +38,29 @@ def get_youtube_service():
         with open("token.pickle", "wb") as token:
             pickle.dump(creds, token)
 
-    return build("youtube", "v3", credentials=creds)
+    return build(
+        "youtube",
+        "v3",
+        credentials=creds
+    )
 
-def upload_video(video_path, title, description):
+
+def upload_video(
+    video_path,
+    title,
+    description
+):
+
+    if not os.path.exists(video_path):
+        raise FileNotFoundError(
+            f"Video file not found: {video_path}"
+        )
+
+    if not title:
+        raise ValueError(
+            "Video title is required"
+        )
+
     youtube = get_youtube_service()
 
     request = youtube.videos().insert(
@@ -46,10 +78,21 @@ def upload_video(video_path, title, description):
         media_body=MediaFileUpload(video_path)
     )
 
-    response = request.execute()
+    try:
 
-    return response["id"]
+        response = request.execute()
+
+        return response["id"]
+
+    except Exception as e:
+
+        raise Exception(
+            f"YouTube upload failed: {str(e)}"
+        )
+
+
 def get_trending_videos():
+
     youtube = get_youtube_service()
 
     request = youtube.videos().list(
@@ -59,17 +102,29 @@ def get_trending_videos():
         maxResults=10
     )
 
-    response = request.execute()
+    try:
 
-    videos = []
+        response = request.execute()
 
-    for item in response["items"]:
-        videos.append({
-            "videoId": item["id"],
-            "title": item["snippet"]["title"],
-            "channel": item["snippet"]["channelTitle"],
-            "thumbnail": item["snippet"]["thumbnails"]["high"]["url"],
-            "views": item["statistics"].get("viewCount", "0")
-        })
+        videos = []
 
-    return videos
+        for item in response["items"]:
+
+            videos.append({
+                "videoId": item["id"],
+                "title": item["snippet"]["title"],
+                "channel": item["snippet"]["channelTitle"],
+                "thumbnail": item["snippet"]["thumbnails"]["high"]["url"],
+                "views": item["statistics"].get(
+                    "viewCount",
+                    "0"
+                )
+            })
+
+        return videos
+
+    except Exception as e:
+
+        raise Exception(
+            f"Failed to fetch trending videos: {str(e)}"
+        )
