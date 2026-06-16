@@ -23,6 +23,11 @@ os.makedirs("uploads", exist_ok=True)
 os.makedirs("output", exist_ok=True)
 
 
+def validate_file(path):
+    if not os.path.exists(path):
+        raise FileNotFoundError(f"File not found: {path}")
+
+
 @app.get("/")
 def home():
     return {
@@ -30,26 +35,56 @@ def home():
     }
 
 
+@app.get("/health")
+def health():
+    return {
+        "status": "healthy"
+    }
+
+
 @app.post("/process-video")
 async def process_video(file: UploadFile = File(...)):
 
-    input_path = f"uploads/{file.filename}"
+    try:
 
-    with open(input_path, "wb") as f:
-        f.write(await file.read())
+        if not file.filename:
+            return {
+                "status": "error",
+                "message": "No file selected"
+            }
 
-    output_path = f"output/edited_{file.filename}"
+        logo_path = "logos/logo.png"
 
-    add_logo(
-        input_path,
-        "logos/logo.png",
-        output_path
-    )
+        if not os.path.exists(logo_path):
+            return {
+                "status": "error",
+                "message": "Logo file not found"
+            }
 
-    return {
-        "status": "success",
-        "output_file": output_path
-    }
+        input_path = f"uploads/{file.filename}"
+
+        with open(input_path, "wb") as f:
+            f.write(await file.read())
+
+        output_path = f"output/edited_{file.filename}"
+
+        add_logo(
+            input_path,
+            logo_path,
+            output_path
+        )
+
+        return {
+            "status": "success",
+            "output_file": output_path
+        }
+
+    except Exception as e:
+
+        return {
+            "status": "error",
+            "message": str(e)
+        }
 
 
 class EmailRequest(BaseModel):
@@ -119,6 +154,8 @@ def upload_to_youtube(data: YouTubeUpload):
 
     try:
 
+        validate_file(data.video_path)
+
         video_id = youtube_upload_video(
             data.video_path,
             data.title,
@@ -185,7 +222,7 @@ def publish_instagram(data: InstagramRequest):
 
 
 class TikTokRequest(BaseModel):
-    video_url: str
+    video_path: str
     title: str
 
 
@@ -195,7 +232,7 @@ def publish_tiktok(data: TikTokRequest):
     try:
 
         result = tiktok_upload_video(
-            data.video_url,
+            data.video_path,
             data.title
         )
 
@@ -221,13 +258,23 @@ def publish_all(data: PublishRequest):
 
     try:
 
+        validate_file(data.video_path)
+
+        logo_path = "logos/logo.png"
+
+        if not os.path.exists(logo_path):
+            return {
+                "status": "error",
+                "message": "Logo file not found"
+            }
+
         edited_video = (
             f"output/edited_{os.path.basename(data.video_path)}"
         )
 
         add_logo(
             data.video_path,
-            "logos/logo.png",
+            logo_path,
             edited_video
         )
 
@@ -259,7 +306,7 @@ def publish_all(data: PublishRequest):
 
         tiktok_result = {
             "status": "not_executed",
-            "message": "Requires public video URL and TikTok credentials"
+            "message": "Requires TikTok credentials and upload implementation"
         }
 
         return {
