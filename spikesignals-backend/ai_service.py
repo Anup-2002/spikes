@@ -4,26 +4,41 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-client = OpenAI(
-    api_key=os.getenv("OPENAI_API_KEY")
-)
+api_key = os.getenv("OPENAI_API_KEY")
+
+if not api_key:
+    raise ValueError("OPENAI_API_KEY is not set")
+
+client = OpenAI(api_key=api_key)
+
 
 def generate_hashtags(transcript):
 
+    if not transcript.strip():
+        raise ValueError("Transcript cannot be empty")
+
     prompt = f"""
-    Analyze this video transcript.
+    Analyze the following video transcript.
 
     Generate:
-    1. A short social media caption
-    2. 15 relevant hashtags
+    1. A short engaging social media caption.
+    2. Exactly 15 relevant hashtags.
 
     Transcript:
     {transcript}
     """
 
-    response = client.responses.create(
-        model="gpt-5-mini",
-        input=prompt
-    )
+    try:
 
-    return response.output_text
+        response = client.responses.create(
+            model="gpt-5-mini",
+            input=prompt
+        )
+
+        return response.output_text
+
+    except Exception as e:
+
+        raise Exception(
+            f"OpenAI API Error: {str(e)}"
+        )
