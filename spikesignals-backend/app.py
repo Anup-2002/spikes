@@ -1,23 +1,34 @@
 from fastapi import FastAPI, UploadFile, File
-from video_editor import add_logo
 from pydantic import BaseModel
+import os
+
+from video_editor import add_logo
 from email_service import send_email
 from ai_service import generate_hashtags
-from pydantic import BaseModel
-from youtube_service import upload_video, get_trending_videos
-from pydantic import BaseModel
+
 from instagram_service import publish_video
-from tiktok_service import upload_video
-import os
+
+from youtube_service import (
+    upload_video as youtube_upload_video,
+    get_trending_videos
+)
+
+from tiktok_service import (
+    upload_video as tiktok_upload_video
+)
 
 app = FastAPI()
 
 os.makedirs("uploads", exist_ok=True)
 os.makedirs("output", exist_ok=True)
 
+
 @app.get("/")
 def home():
-    return {"message": "SpikeSignals Backend Running"}
+    return {
+        "message": "SpikeSignals Backend Running"
+    }
+
 
 @app.post("/process-video")
 async def process_video(file: UploadFile = File(...)):
@@ -39,6 +50,8 @@ async def process_video(file: UploadFile = File(...)):
         "status": "success",
         "output_file": output_path
     }
+
+
 class EmailRequest(BaseModel):
     receiver: str
     subject: str
@@ -48,69 +61,218 @@ class EmailRequest(BaseModel):
 @app.post("/send-email")
 def send_email_api(data: EmailRequest):
 
-    send_email(
-        data.receiver,
-        data.subject,
-        data.body
-    )
+    try:
 
-    return {
-        "status": "success",
-        "message": "Email sent"
-    }
+        send_email(
+            data.receiver,
+            data.subject,
+            data.body
+        )
+
+        return {
+            "status": "success",
+            "message": "Email sent"
+        }
+
+    except Exception as e:
+
+        return {
+            "status": "error",
+            "message": str(e)
+        }
+
+
 class TranscriptRequest(BaseModel):
     transcript: str
+
+
 @app.post("/generate-caption")
 def generate_caption(data: TranscriptRequest):
 
-    result = generate_hashtags(
-        data.transcript
-    )
+    try:
 
-    return {
-        "status": "success",
-        "result": result
-    }
+        result = generate_hashtags(
+            data.transcript
+        )
+
+        return {
+            "status": "success",
+            "result": result
+        }
+
+    except Exception as e:
+
+        return {
+            "status": "error",
+            "message": str(e)
+        }
+
+
 class YouTubeUpload(BaseModel):
     video_path: str
     title: str
     description: str
+
+
 @app.post("/upload-youtube")
 def upload_to_youtube(data: YouTubeUpload):
 
-    video_id = upload_video(
-        data.video_path,
-        data.title,
-        data.description
-    )
+    try:
 
-    return {
-        "status": "success",
-        "video_id": video_id,
-        "youtube_url": f"https://youtu.be/{video_id}"
-    }
+        video_id = youtube_upload_video(
+            data.video_path,
+            data.title,
+            data.description
+        )
+
+        return {
+            "status": "success",
+            "video_id": video_id,
+            "youtube_url": f"https://youtu.be/{video_id}"
+        }
+
+    except Exception as e:
+
+        return {
+            "status": "error",
+            "message": str(e)
+        }
+
+
 @app.get("/trending-videos")
 def trending_videos():
 
-    videos = get_trending_videos()
+    try:
 
-    return {
-        "status": "success",
-        "videos": videos
-    }
+        videos = get_trending_videos()
+
+        return {
+            "status": "success",
+            "videos": videos
+        }
+
+    except Exception as e:
+
+        return {
+            "status": "error",
+            "message": str(e)
+        }
+
+
+class InstagramRequest(BaseModel):
+    video_url: str
+    caption: str
+
+
 @app.post("/publish-instagram")
-def publish_instagram():
-    result = publish_video(
-        "https://your-public-video-url.mp4",
-        "Generated caption"
-    )
-    return result
+def publish_instagram(data: InstagramRequest):
+
+    try:
+
+        result = publish_video(
+            data.video_url,
+            data.caption
+        )
+
+        return result
+
+    except Exception as e:
+
+        return {
+            "status": "error",
+            "message": str(e)
+        }
+
+
+class TikTokRequest(BaseModel):
+    video_url: str
+    title: str
 
 
 @app.post("/publish-tiktok")
-def publish_tiktok():
-    result = upload_video(
-        "uploads/video.mp4",
-        "Generated title"
-    )
-    return result
+def publish_tiktok(data: TikTokRequest):
+
+    try:
+
+        result = tiktok_upload_video(
+            data.video_url,
+            data.title
+        )
+
+        return result
+
+    except Exception as e:
+
+        return {
+            "status": "error",
+            "message": str(e)
+        }
+
+
+class PublishRequest(BaseModel):
+    video_path: str
+    title: str
+    description: str
+    caption: str
+
+
+@app.post("/publish-all")
+def publish_all(data: PublishRequest):
+
+    try:
+
+        edited_video = (
+            f"output/edited_{os.path.basename(data.video_path)}"
+        )
+
+        add_logo(
+            data.video_path,
+            "logos/logo.png",
+            edited_video
+        )
+
+        try:
+
+            youtube_id = youtube_upload_video(
+                edited_video,
+                data.title,
+                data.description
+            )
+
+            youtube_result = {
+                "status": "success",
+                "video_id": youtube_id,
+                "url": f"https://youtu.be/{youtube_id}"
+            }
+
+        except Exception as e:
+
+            youtube_result = {
+                "status": "error",
+                "message": str(e)
+            }
+
+        instagram_result = {
+            "status": "not_executed",
+            "message": "Requires public video URL and Instagram credentials"
+        }
+
+        tiktok_result = {
+            "status": "not_executed",
+            "message": "Requires public video URL and TikTok credentials"
+        }
+
+        return {
+            "status": "success",
+            "edited_video": edited_video,
+            "youtube": youtube_result,
+            "instagram": instagram_result,
+            "tiktok": tiktok_result
+        }
+
+    except Exception as e:
+
+        return {
+            "status": "error",
+            "message": str(e)
+        }
