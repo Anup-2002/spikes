@@ -3,3 +3,8 @@ uvicorn
 python-multipart
 yt-dlp
 requests
+openai
+python-dotenv
+google-api-python-client
+google-auth-oauthlib
+google-auth-httplib2
